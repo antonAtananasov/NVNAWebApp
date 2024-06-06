@@ -1,0 +1,1 @@
+The routers feed data to the controllers. The controllers process it, parse it, convert it, do calculations and so on, and know what to do with it, wether to send results back to the user, or make a call to another system, like a database.

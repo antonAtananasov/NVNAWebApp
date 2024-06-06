@@ -1,0 +1,1 @@
+The backend is its own instance of a server/api - it receives requests from client browsers or some other system and gives data back in return

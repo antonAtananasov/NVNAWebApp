@@ -1,0 +1,1 @@
+Models model the data - they usually handle data from the controllers to a database and back. They query the database, modify records on it and turn the results into objects, which the controllers can work with.

@@ -1,0 +1,1 @@
+The core makes the connection between the backend and other services like APIs and databases. It holds the 'connection' objects which the models use to talk to these outside services.

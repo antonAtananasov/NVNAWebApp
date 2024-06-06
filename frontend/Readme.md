@@ -1,0 +1,1 @@
+The frontend is the webpage - it gets loaded to the client/user's browser and rendered and processed there. 

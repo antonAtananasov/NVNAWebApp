@@ -1,0 +1,1 @@
+Web applications are basically a website, which behaves as a program. It does not consist of many pages and it has a general "Layout", which is filled with reusable components, each responsible for a simple function.

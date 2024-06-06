@@ -1,0 +1,1 @@
+Routers are responsible for receiving HTTP requests at the appropriate URL (path/end-point), catching the data from the requests and handing it over to controllers, which do the logic. Routers provide the end-points.
