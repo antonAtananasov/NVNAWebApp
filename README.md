@@ -20,22 +20,22 @@ _Each group can understand the task differently and develop its own extended/mod
 
 **Scoring Scheme:**
 
-20 points* - CRUD (Create, Read, Update, Delete)
-25 points* - Use of Angular/Vue/React to consume the CRUD operations
-10 points* - Use of a database (MySQL)
-10 points - Use of TypeScript in the Backend
-15 points - Use of OOP in the Backend
-10 points - Good UX/UI (Design)
-10 points - Adding functionalities not specified in the task (use of Git/GitHub, use of packages to improve and facilitate work)
-_The tasks marked with an asterisk (*) must be completed to achieve at least a minimum grade._
+20 points* - CRUD (Create, Read, Update, Delete)  
+25 points* - Use of Angular/Vue/React to consume the CRUD operations  
+10 points* - Use of a database (MySQL)  
+10 points - Use of TypeScript in the Backend  
+15 points - Use of OOP in the Backend  
+10 points - Good UX/UI (Design)  
+10 points - Adding functionalities not specified in the task (use of Git/GitHub, use of packages to improve and facilitate work)  
+_The tasks marked with an asterisk (*) must be completed to achieve at least a minimum grade._  
 
 **Grading Scheme:**
 
-90 points =+ Excellent
-80 points =+ Very Good
-70 points =+ Good
-60 points =+ Satisfactory
-50 points =+ Poor
+90 points =+ Excellent  
+80 points =+ Very Good  
+70 points =+ Good  
+60 points =+ Satisfactory  
+50 points =+ Poor  
 _Each member will be evaluated individually based on their participation in the project. Points are awarded upon defense of the work._
 
 
