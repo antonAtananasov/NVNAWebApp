@@ -15,7 +15,7 @@ topics or you can present an option based on your own idea. The coursework tasks
 a maximum of 3 people and no less than 2 people (if it is not possible to form a group of 3). Evaluation is done on a point-based system, 
 at the discretion of the instructor, based on whether the criteria outlined in the document below are met. 
 Bonus points are not awarded for attendance in lectures or exercises, but attendance will be taken into account when assigning 
-a grade that falls between two levels. You have the full right to interpret the tasks as you wish. What does this mean? 
+a grade that falls between two levels. You have the full right to interpret the tasks as you wish. What does this mean?   
 _Each group can understand the task differently and develop its own extended/modified idea._
 
 **Scoring Scheme:**
@@ -26,7 +26,7 @@ _Each group can understand the task differently and develop its own extended/mod
 10 points - Use of TypeScript in the Backend  
 15 points - Use of OOP in the Backend  
 10 points - Good UX/UI (Design)  
-10 points - Adding functionalities not specified in the task (use of Git/GitHub, use of packages to improve and facilitate work)  
+10 points - Adding functionalities not specified in the task (use of Git/GitHub, use of packages to improve and facilitate work)    
 _The tasks marked with an asterisk (*) must be completed to achieve at least a minimum grade._  
 
 **Grading Scheme:**
@@ -36,7 +36,7 @@ _The tasks marked with an asterisk (*) must be completed to achieve at least a m
 70 points =+ Good  
 60 points =+ Satisfactory  
 50 points =+ Poor  
-_Each member will be evaluated individually based on their participation in the project. Points are awarded upon defense of the work._
+_Each member will be evaluated individually based on their participation in the project. Points are awarded upon defense of the work._  
 
 
 
