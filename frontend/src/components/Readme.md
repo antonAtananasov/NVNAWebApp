@@ -1,0 +1,1 @@
+Smaller components build the bigger picture, which makes the web app modular and easier to manage.
