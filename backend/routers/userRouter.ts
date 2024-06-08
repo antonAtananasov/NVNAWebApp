@@ -17,7 +17,7 @@ userRouter.get('/session', async (req, res) => { //test session authentication
         const session: IUserSession = JSON.parse(req.cookies.session) as IUserSession
         const isSessionActive = await userAuthenticator.authenticateWithSession(session)
         if (isSessionActive) {
-            res.send('Session is active for user ' + session.username) //test serving endpoint
+            res.send('Session is active for user ' + session.username + ' until ' + session.expires) //test serving endpoint
             return
         }
         else {
