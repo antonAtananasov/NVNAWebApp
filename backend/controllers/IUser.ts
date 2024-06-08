@@ -1,6 +1,4 @@
-import { RowDataPacket } from "mysql2"
-
-export interface IUser extends RowDataPacket { // how a row from the database maps to a javascript object
+export interface IUser { // how an object from the model maps to an object in the controller
     uuid: string
     username: string
     password: string
