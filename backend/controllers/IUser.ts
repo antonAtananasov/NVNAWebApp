@@ -6,3 +6,7 @@ export interface IUser { // how an object from the model maps to an object in th
     planId?: number
     planStartDate?: string //dates are received as strings
 }
+export interface IUserSession extends IUser {
+    expires: Date, //when the session becomes invalid
+    id: string //session uuid
+}

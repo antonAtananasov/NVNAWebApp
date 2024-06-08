@@ -18,7 +18,7 @@ export class UserModel extends DB {
         }
     }
 
-    public getUserByName = async (username: string) => {
+    public getUserByName: (username: string) => Promise<IUser> = async (username: string) => {
         try {
             const [rows] = await this.connection.query<IUser[]>('select * from users where username=? limit 1', [username])
             return rows[0]
@@ -33,7 +33,6 @@ export class UserModel extends DB {
             await this.connection.query('insert into users (uuid,username,password) values (?,?,?)', [uuidv4(), user.username, user.password])
         }
         catch (err) {
-            console.log(err)
             throw new Error('Database error')
         }
     }

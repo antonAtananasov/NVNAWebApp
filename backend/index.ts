@@ -4,8 +4,10 @@ import documentRouter from "./routers/documentRouter";
 
 const app = express();
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
 app.use(json())
 app.use(cors())
+app.use(cookieParser())
 
 
 app.get('/', (req, res) => { //to quickly see if the server is handling requests

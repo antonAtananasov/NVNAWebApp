@@ -28,9 +28,4 @@ export class UserController {
             throw err
         }
     }
-
-    authenticate = async (password: string, user: IUser) => {
-        return await encryptor.compare(password, user.password!)
-    }
-
 }
