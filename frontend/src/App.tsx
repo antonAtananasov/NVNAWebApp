@@ -4,6 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Nav, Navbar } from 'react-bootstrap';
 import { Container, Row, Col } from "react-bootstrap";
 import RegisterAccountForm from './components/RegisterAccountForm';
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import NotFound from "./components/NotFound.tsx";
+import FileControls from "./components/FileControls.tsx";
 
 
 const testGet = async (setter: React.Dispatch<React.SetStateAction<string>>) => {
@@ -35,12 +38,20 @@ function App() {
             </Navbar>
 
 
+
             <Container data-bs-theme="light position" fluid className="w-100">
                 <Row className="w-100 mt-4 mb-4">
                     <Col className='col-2 border-end'>Left panel</Col>
                     <Col className='col-8'>
                         <Row className='w-100 p-3'>
-                            <RegisterAccountForm></RegisterAccountForm>
+                            <BrowserRouter>
+                                <Routes>
+                                    <Route path={"/login"} element={<RegisterAccountForm></RegisterAccountForm>}/>
+                                    <Route path={"/"} element={<br/>}/>
+                                    <Route path={"*"} element={<NotFound/>}/>
+                                    <Route path={"/filecontrols"} element={<FileControls/>}/>
+                                </Routes>
+                            </BrowserRouter>
                         </Row>
                     </Col>
                     <Col className='col-2 border-start'>Right panel</Col>
