@@ -8,91 +8,120 @@ const userController = new UserController()
 const userAuthenticator = new UserAuthenticator()
 
 //GET
-userRouter.get('/', async (req, res) => { //
-    res.send('Hello users') //test serving endpoint
+userRouter.get('/', async (req, res) => { //test serving endpoint
+    res.send('Hello users')
     // res.send(JSON.stringify(await userController.getAllUsers())) //unsecure
 })
+
 userRouter.get('/session', async (req, res) => { //test session authentication
-    if (req.cookies.session) {
+    if (req.cookies.session) {//there is a session cookie
         const session: IUserSession = JSON.parse(req.cookies.session) as IUserSession
         const isSessionActive = await userAuthenticator.authenticateWithSession(session)
-        if (isSessionActive) {
-            res.send('Session is active for user ' + session.username + ' until ' + session.expires) //test serving endpoint
+        if (isSessionActive) {//session exists and is active
+            res.send('Session is active for user ' + session.username + ' until ' + session.expires)
             return
         }
-        else {
-            res.send('Session not found or expired') //test serving endpoint
+        else { //session is not saved on server or expired
+            res.send('Session not found or expired')
             return
         }
     }
-    else {
+    else { // no session cookie
         res.status(401).send('Session not found')
         return
     }
-    // res.send(JSON.stringify(await userController.getAllUsers())) //unsecure
+})
+
+userRouter.get('/:uuid', async (req, res) => { //get user data
+    if (req.cookies.session) { // there is a session cookie
+        const session: IUserSession = JSON.parse(req.cookies.session) as IUserSession
+        const isSessionActive = await userAuthenticator.authenticateWithSession(session)
+        if (isSessionActive) { // session is stored on server and is active
+            const uuid: string = req.params.uuid
+            if (uuid !== session.uuid) { //the requesting user not is the requested target 
+                res.status(401).send('User not authorized to perform this action')
+                return
+            }
+            else {//the requesting user is the requested target 
+                const user = await userController.getUser(uuid)
+                res.status(200).send(JSON.stringify(user))
+                return
+            }
+        }
+        else { //session is not stored on server or expired
+            res.status(401).send('Session expired')
+            return
+        }
+    }
+    else { //no session cookie
+        res.status(401).send('Session not found')
+        return
+    }
 })
 
 
 //POST
 userRouter.post('/', async (req, res) => { //create new user
-    const hashedPassword: string = req.body.password
     const user: IUser = {
         username: req.body.username,
-        password: hashedPassword
+        password: req.body.password
     }
-    try {
-        const foundUser = await userController.getUserByName(user.username)
-        if (foundUser === null || foundUser === undefined) {
-            userController.createUser(user)
-            res.status(200).send()
-            return
-        }
-        else {
-            res.status(401).send('User with that username already exists.')
-            return
-        }
-    }
-    catch (err) {
-        res.status(500).send(err)
+    if (!userAuthenticator.validatePassword(req.body.password)) //password does not match the requirements
+    {
+        res.status(400).send('Password does not match the requirements')
         return
     }
+    else
+        try {
+            const foundUser = await userController.getUserByName(user.username)
+            if (!foundUser) { // user does not exist in the database
+                userController.createUser(user)
+                res.status(200).send()
+                return
+            }
+            else { // user already exists
+                res.status(401).send('User with that username already exists.')
+                return
+            }
+        }
+        catch (err) {
+            res.status(500).send('UserRouter: post /: ' + (err as Error).message)
+            return
+        }
 })
 
-userRouter.post('/login', async (req, res) => { //authenticate
+userRouter.post('/login', async (req, res) => { // login and create session
     const { username, password } = req.body
     try {
         const foundUser = await userController.getUserByName(username)
-        if (foundUser === null || foundUser === undefined) {
+        if (!foundUser) { //no such user in the database
             res.status(404).send('No such user found')
             return
         }
-        try {
-            const session: IUserSession = await userAuthenticator.authenticateWithCredentials(username, password)
-            if (session) {
-                res.status(200).cookie('session', JSON.stringify(session)).send('Successfully authenticated user ' + session.username)
+        else // user is found in the database
+            try {
+                const session: IUserSession = await userAuthenticator.authenticateWithCredentials(username, password)
+                if (session) { // user is successfully authenticated and new session is created
+                    const sessionJSON = JSON.stringify(session)
+                    res.status(200).cookie('session', sessionJSON).send(sessionJSON)
+                    return
+                }
+                else { //user did not send correct credentials
+                    res.status(401).send('Wrong password')
+                    return
+                }
+
+            }
+            catch (err) {
+                res.status(400).send('UserRouter: post /login: ' + (err as Error).message)
                 return
             }
-            else {
-                res.status(401).send('Wrong password')
-                return
-            }
-
-        }
-        catch (err) {
-            res.status(401).send((err as Error).message)
-            return
-
-        }
 
     }
     catch (err) {
-        res.status(500).send((err as Error).message)
+        res.status(500).send('UserRouter: post /login: ' + (err as Error).message)
         return
     }
-})
-userRouter.delete('/login', async (req, res) => { //logout
-    const session: IUserSession = JSON.parse(req.cookies.session) as IUserSession
-    userAuthenticator.logout(session, true)
 })
 
 
@@ -177,5 +206,20 @@ userRouter.put('/:uuid', async (req, res) => { //change user data (password or u
 
 
 //DELETE
+userRouter.delete('/login', async (req, res) => { //logout (remove session)
+    const session: IUserSession = JSON.parse(req.cookies.session) as IUserSession
+    const isUserAuthenticated = await userAuthenticator.authenticateWithSession(session)
+    if (!isUserAuthenticated) {
+        res.status(401).send('User does not control this session')
+        return
+    }
+    userAuthenticator.logout(session, true)
+    res.status(200).send('Session deleted.')
+    return
+})
+
+//delete user
+
+
 
 export default userRouter;
