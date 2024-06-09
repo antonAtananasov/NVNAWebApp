@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
-import { Button, Form, Container, Row, Col } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
+
+interface Props {
+    isLogin: boolean
+}
+
+const RegisterAccountForm = ({ isLogin }: Props) => {
+    return isLogin ? LoginForm() : SignupForm()
+}
 
 const LoginForm = () => {
     return (
@@ -51,3 +58,4 @@ const SignupForm = () => {
 };
 
 
+export default RegisterAccountForm;
