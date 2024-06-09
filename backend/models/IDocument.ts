@@ -1,4 +1,6 @@
-export interface IDocument { // how a row from the database maps to a javascript object
+import { QueryResult, RowDataPacket } from "mysql2"
+
+export interface IDocument extends RowDataPacket { // how a row from the database maps to a javascript object
     uuid: string
     ownerUUID: string
     name: string

@@ -1,15 +1,19 @@
-import { UserController } from "../controllers/UserController";
 import { DB } from "../core/DB";
 import { IUser } from "./IUser";
 import { v4 as uuidv4 } from 'uuid';
 
 export class UserModel extends DB {
-    // getAllUsers = async () => {
-    //     const [rows] = await this.connection.query<IUser[]>('select * from users')
-    //     return rows
-    // }
 
-    getUser = async (uuid: string) => {
+    getAllUsers: () => Promise<IUser[]> = async () => {
+        try {
+            const [rows] = await this.connection.query<IUser[]>('select * from users', [])
+            return rows
+        }
+        catch {
+            throw new Error('Database error at getAllUsers')
+        }
+    }
+    getUser: (uuid: string) => Promise<IUser> = async (uuid: string) => {
         try {
             const [rows] = await this.connection.query<IUser[]>('select * from users where uuid=? limit 1', [uuid])
             return rows[0]
@@ -38,7 +42,7 @@ export class UserModel extends DB {
         }
     }
 
-    updateUserUsername = async (uuid: string, newUsername: string) => {
+    updateUserUsername: (uuid: string, newUsername: string) => Promise<boolean> = async (uuid: string, newUsername: string) => {
         try {
             await this.connection.query('update users set username=? where uuid=?', [newUsername, uuid])
             return true
@@ -48,7 +52,8 @@ export class UserModel extends DB {
         }
 
     }
-    updateUserPassword = async (uuid: string, newPassword: string) => {
+
+    updateUserPassword: (uuid: string, newPassword: string) => Promise<boolean> = async (uuid: string, newPassword: string) => {
         try {
             await this.connection.query('update users set password=? where uuid=?', [newPassword, uuid])
             return true

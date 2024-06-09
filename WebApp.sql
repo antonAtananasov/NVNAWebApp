@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 09, 2024 at 11:34 PM
+-- Generation Time: Jun 10, 2024 at 12:13 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,9 +35,9 @@ CREATE TABLE `documents` (
   `content` blob DEFAULT NULL,
   `root_document_uuid` char(36) DEFAULT NULL,
   `is_folder` tinyint(1) NOT NULL DEFAULT 0,
-  `creation_date` date NOT NULL DEFAULT current_timestamp(),
-  `last_modified_date` date NOT NULL DEFAULT current_timestamp(),
-  `last_accessed_date` date NOT NULL DEFAULT current_timestamp(),
+  `creation_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `last_modified_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `last_accessed_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `size` float NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -105,9 +105,9 @@ CREATE TABLE `users` (
   `uuid` char(36) NOT NULL,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `creation_date` date NOT NULL DEFAULT current_timestamp(),
+  `creation_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `plan_id` int(11) NOT NULL DEFAULT 0,
-  `plan_start_date` date NOT NULL DEFAULT current_timestamp()
+  `plan_start_date` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
