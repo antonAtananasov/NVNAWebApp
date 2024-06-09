@@ -52,4 +52,13 @@ export class UserController {
             throw new Error('UserController: updateUserPassword: ' + (err as Error).message)
         }
     }
+
+    deleteUser: (uuid: string) => Promise<boolean> = async (uuid: string) => {
+        try {
+            return await this.userModel.deleteUser(uuid)
+        }
+        catch (err) {
+            throw new Error('UserController: deleteUser: ' + (err as Error).message)
+        }
+    }
 }

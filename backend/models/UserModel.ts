@@ -59,4 +59,14 @@ export class UserModel extends DB {
 
     }
 
+    deleteUser: (uuid: string) => Promise<boolean> = async (uuid: string) => {
+        try {
+            await this.connection.query('delete from users where uuid=?', [uuid])
+            return true
+        }
+        catch (err) {
+            throw new Error('Database error at deleteUser')
+        }
+    }
+
 }
