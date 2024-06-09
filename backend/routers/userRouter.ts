@@ -85,7 +85,7 @@ userRouter.post('/', async (req, res) => { //create new user
             }
         }
         catch (err) {
-            res.status(500).send('UserRouter: post /: ' + (err as Error).message)
+            res.status(500).send("userRouter: post /: " + (err as Error).message)
             return
         }
 })
@@ -110,13 +110,11 @@ userRouter.post('/login', async (req, res) => { // login and create session
                     res.status(401).send('Wrong password')
                     return
                 }
-
             }
             catch (err) {
                 res.status(400).send('UserRouter: post /login: ' + (err as Error).message)
                 return
             }
-
     }
     catch (err) {
         res.status(500).send('UserRouter: post /login: ' + (err as Error).message)
@@ -190,13 +188,11 @@ userRouter.put('/:uuid', async (req, res) => { //change user data (password or u
                         res.status(401).send('Wrong password')
                         return
                     }
-
                 }
                 catch (err) {
                     res.status(400).send('UserRouter: put /:uuid: ' + (err as Error).message)
                     return
                 }
-
         }
         catch (err) {
             res.status(500).send('UserRouter: put /:uuid: ' + (err as Error).message)
