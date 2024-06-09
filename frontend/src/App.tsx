@@ -39,7 +39,7 @@ function App() {
                 <Row className="w-100 mt-4 mb-4">
                     <Col className='col-2 border-end'>Left panel</Col>
                     <Col className='col-8'>
-                        <Row className='w-100 p-3 d-flex text-start'>
+                        <Row className='w-100 p-3'>
                             <RegisterAccountForm></RegisterAccountForm>
                         </Row>
                     </Col>
