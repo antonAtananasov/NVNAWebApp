@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 import { useEffect, useState } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,25 +11,30 @@ const testGet = async (setter: React.Dispatch<React.SetStateAction<string>>) => 
     const text = await result.text()
     setter(text)
 }
->>>>>>> Stashed changes
 
-import './App.css';
-import LoginSignup from "./components/LoginSignup.tsx";
-import Layout from "./pages/Layout.tsx";
 
 function App() {
-  return (
+    const [count, setCount] = useState(0)
+    const [text, setText] = useState('loading...')
+    useEffect(() => {
+        testGet(setText)
+    })
+
+    return (
+        <>
+            {/* put the BrowserRouter and Route tags here */}
+            <Navbar bg="dark" data-bs-theme="dark">
+                <Container>
+                    <Navbar.Brand href="#home">Navbar</Navbar.Brand>
+                    <Nav className="me-auto">
+                        <Nav.Link href="#home">Home</Nav.Link>
+                        <Nav.Link href="#features">Features</Nav.Link>
+                        <Nav.Link href="#pricing">Pricing</Nav.Link>
+                    </Nav>
+                </Container>
+            </Navbar>
 
 
-<<<<<<< Updated upstream
-        <Layout>
-            <LoginSignup/>
-        </Layout>
-
-
-
-  );
-=======
             <Container data-bs-theme="light position" fluid className="w-100">
                 <Row className="w-100 mt-4 mb-4">
                     <Col className='col-2 border-end'>Left panel</Col>
@@ -49,7 +52,6 @@ function App() {
             {/*  */}
         </>
     )
->>>>>>> Stashed changes
 }
 
-export default App;
+export default App
