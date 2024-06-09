@@ -1,24 +1,22 @@
-import { useEffect } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
+import { useEffect, useState } from 'react'
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Nav, Navbar } from 'react-bootstrap'
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Button } from "react-bootstrap";
 
-// const testGet = async (setter: React.Dispatch<React.SetStateAction<string>>) => {
-//     const result = await fetch('http://localhost:3000/')
-//     const text = await result.text()
-//     setter(text)
-// }
+const testGet = async (setter: React.Dispatch<React.SetStateAction<string>>) => {
+    const result = await fetch('http://localhost:3000/')
+    const text = await result.text()
+    setter(text)
+}
 
 
 function App() {
-    // const [count, setCount] = useState(0)
-    // const [text, setText] = useState('loading...')
-    // useEffect(() => {
-    //     testGet(setText)
-    // })
+    const [count, setCount] = useState(0)
+    const [text, setText] = useState('loading...')
+    useEffect(() => {
+        testGet(setText)
+    })
 
     return (
         <>
@@ -45,6 +43,8 @@ function App() {
                                 <h2>Subtitle</h2>
                                 <br></br>
                                 <section>Content</section>
+                                <p>{text}</p>
+                                <Button onClick={() => setCount((count) => count + 1)}>Count: {count}</Button>
                             </div>
                         </Row>
                     </Col>

@@ -95,7 +95,86 @@ userRouter.delete('/login', async (req, res) => { //logout
     userAuthenticator.logout(session, true)
 })
 
+
 //PUT
+userRouter.put('/:uuid', async (req, res) => { //change user data (password or username)
+    const { username, password } = req.body
+    if (!(username && password)) {
+        res.status(400).send('No credentials sent')
+        return
+    }
+    let { newUsername, newPassword } = req.body
+    if (!(newUsername || newPassword)) {
+        res.status(400).send('No new credentials sent')
+        return
+    }
+    else
+        try {
+            const foundUser = await userController.getUser(req.params.uuid)
+            if (!foundUser) { //user with given uuid is not found in the database
+                res.status(404).send('No such user found')
+                return
+            }
+            else //user is found on the database
+                try {
+                    let session: IUserSession
+                    try {
+                        session = await userAuthenticator.authenticateWithCredentials(username, password) //require password, not session
+                    }
+                    catch {
+                        res.status(400).send('Wrong credentials')
+                        return
+                    }
+                    if (session) {// user sent correct credentials
+
+                        if (newUsername && newUsername.length > 6) // user requests new username
+                            if (!await userController.getUserByName(newUsername)) // username is not already taken
+                                try { await userController.updateUserUsername(req.params.uuid, newUsername) }
+                                catch (err) {
+                                    res.status(500).send('UserRouter: put /:uuid: ' + (err as Error).message)
+                                    return
+                                }
+                            else {
+                                res.status(400).send('Username is already taken')
+                                return
+                            }
+                        else newUsername = username
+                        if (newPassword) // user requests new password
+                            if (userAuthenticator.validatePassword(newPassword)) //password matches validation
+                                try { await userController.updateUserPassword(req.params.uuid, newPassword) }
+                                catch (err) {
+                                    res.status(500).send('UserRouter: put /:uuid: ' + (err as Error).message)
+                                    return
+                                }
+                            else {
+                                res.status(400).send('Password does not match the requirements')
+                                return
+                            }
+                        else newPassword = password
+
+                        const newSession = await userAuthenticator.authenticateWithCredentials(newUsername, newPassword)
+                        const sessionJSON = JSON.stringify(newSession)
+                        res.status(200).cookie('session', sessionJSON).send(sessionJSON)
+                        return
+                    }
+                    else {//user did not send correct credentials
+                        res.status(401).send('Wrong password')
+                        return
+                    }
+
+                }
+                catch (err) {
+                    res.status(400).send('UserRouter: put /:uuid: ' + (err as Error).message)
+                    return
+                }
+
+        }
+        catch (err) {
+            res.status(500).send('UserRouter: put /:uuid: ' + (err as Error).message)
+            return
+        }
+})
+
 
 //DELETE
 
