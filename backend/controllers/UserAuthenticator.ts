@@ -93,7 +93,11 @@ export class UserAuthenticator {
     }
     logout = (session: IUserSession, overwrite: boolean = true) => {
         //remove session from list if (overwrite == true) remove all sessions of same user
-        this.authenticatedSessions = this.authenticatedSessions.filter(s => overwrite ? s.id === session.id && s.username === session.username : s.id === session.id)
+        this.authenticatedSessions = this.authenticatedSessions.filter(s => overwrite ? !(s.id === session.id && s.username === session.username) : !(s.id === session.id))
+    }
+
+    validatePassword: (password: string) => boolean = (password: string) => {
+        return password.length >= 6 //just length
     }
 
 }
