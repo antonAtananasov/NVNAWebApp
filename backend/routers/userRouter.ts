@@ -217,7 +217,32 @@ userRouter.delete('/login', async (req, res) => { //logout (remove session)
     return
 })
 
-//delete user
+userRouter.delete('/:uuid', async (req, res) => { //delete user
+    const { username, password } = req.body
+    try {
+        const session = await userAuthenticator.authenticateWithCredentials(username, password)
+        if (session) { // session is stored on server and is active
+            const uuid: string = req.params.uuid
+            if (uuid !== session.uuid) { //the requesting user not is the requested target 
+                res.status(401).send('User not authorized to perform this action')
+                return
+            }
+            else {//the requesting user is the requested target 
+                userController.deleteUser(uuid)
+                res.status(200).send()
+                return
+            }
+        }
+        else { //session is not stored on server or expired
+            res.status(401).send('Wrong credentials')
+            return
+        }
+    }
+    catch (err) {
+        res.status(500).send('UserRouter: delete /:uuid: ' + (err as Error).message)
+        return
+    }
+})
 
 
 
