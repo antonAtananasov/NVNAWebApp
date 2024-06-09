@@ -46,18 +46,18 @@
 }
 
 
-.custom-container {
-  background: linear-gradient(135deg, #7d90ff, #5ce1e6);
-  height: 100vh; /* Adjust as needed */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+/*.custom-container {*/
+/*  background: linear-gradient(135deg, #7d90ff, #5ce1e6);*/
+/*  height: 100vh; !* Adjust as needed *!*/
+/*  display: flex;*/
+/*  justify-content: center;*/
+/*  align-items: center;*/
+/*}*/
 
-.custom-form {
-  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+/*.custom-form {*/
+/*  background-color: rgba(255, 255, 255, 0.8); !* Semi-transparent white background *!*/
+/*  padding: 20px;*/
+/*  border-radius: 10px;*/
+/*  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/
+/*}*/
 

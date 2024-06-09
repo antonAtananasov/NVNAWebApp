@@ -50,32 +50,4 @@ const SignupForm = () => {
     );
 };
 
-const App = () => {
-    const [isLogin, setIsLogin] = useState(true);
 
-    return (
-        <Container fluid className="custom-container">
-            <Row className="justify-content-md-center">
-                <Col md="4">
-                    {isLogin ? <LoginForm /> : <SignupForm />}
-                    <div className="d-grid gap-2 mt-3">
-                        <Button
-                            variant={isLogin ? "primary" : "light"}
-                            onClick={() => setIsLogin(true)}
-                        >
-                            Login
-                        </Button>
-                        <Button
-                            variant={!isLogin ? "primary" : "light"}
-                            onClick={() => setIsLogin(false)}
-                        >
-                            Sign Up
-                        </Button>
-                    </div>
-                </Col>
-            </Row>
-        </Container>
-    );
-};
-
-export default App;
