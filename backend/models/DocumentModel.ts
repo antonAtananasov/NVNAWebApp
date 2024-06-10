@@ -57,7 +57,17 @@ export class DocumentModel extends DB {
         }
     }
 
-    createDocument: (document: any) => Promise<void> = async (document: any) => {
+    getTotalDocumentsSizeByUser: (uuid: string) => Promise<number> = async (uuid: string) => {
+        try {
+            const [rows] = await this.connection.query('select sum(size) from documents where owner_uuid=? group by owner_uuid limit 1', [uuid])
+            return rows[0]
+        }
+        catch (err) {
+            throw new Error('Database error at getTotalDocumentsSizeByUser')
+        }
+    }
+
+    createDocument: (document: any) => Promise<boolean> = async (document: any) => {
         try {
             await this.connection.query('insert into documents (uuid,owner_uuid,format,content,root_document_uuid,isFolder,size) values (?,?,?,?,?,?,?)', [
                 uuidv4(),
@@ -69,6 +79,7 @@ export class DocumentModel extends DB {
                 document.isFolder,
                 document.size
             ])
+            return true
         }
         catch (err) {
             throw new Error('Database error at createDocument')

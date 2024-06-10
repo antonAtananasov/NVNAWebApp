@@ -44,7 +44,7 @@ export class UserModel extends DB {
 
     updateUserUsername: (uuid: string, newUsername: string) => Promise<boolean> = async (uuid: string, newUsername: string) => {
         try {
-            await this.connection.query('update users set username=? where uuid=?', [newUsername, uuid])
+            await this.connection.query('update users set username=? where uuid=? limit 1', [newUsername, uuid])
             return true
         }
         catch (err) {
@@ -55,7 +55,7 @@ export class UserModel extends DB {
 
     updateUserPassword: (uuid: string, newPassword: string) => Promise<boolean> = async (uuid: string, newPassword: string) => {
         try {
-            await this.connection.query('update users set password=? where uuid=?', [newPassword, uuid])
+            await this.connection.query('update users set password=? where uuid=? limit 1', [newPassword, uuid])
             return true
         }
         catch (err) {
@@ -66,7 +66,7 @@ export class UserModel extends DB {
 
     deleteUser: (uuid: string) => Promise<boolean> = async (uuid: string) => {
         try {
-            await this.connection.query('delete from users where uuid=?', [uuid])
+            await this.connection.query('delete from users where uuid=? limit 1', [uuid])
             return true
         }
         catch (err) {
