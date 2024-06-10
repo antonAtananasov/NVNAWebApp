@@ -51,6 +51,9 @@ export class UserAuthenticator {
 
         return new Date(foundSession.expires).getTime() > new Date().getTime()
     }
+    async authenticateWithCookie(cookies: any): Promise<boolean> {
+        return cookies.session && await this.authenticateWithSession(JSON.parse(cookies) as IUserSession)
+    }
 
     generateSession: (username: string, password: string, overwrite?: boolean, duration?: number) => Promise<IUserSession> = async (username: string, password: string, overwrite?: boolean, duration?: number) => {
         overwrite ||= overwrite === false ? false : this.overwrite

@@ -25,7 +25,7 @@ export class UserController {
         }
     }
 
-    createUser: (user: IUser) => void = async (user: IUser) => {
+    createUser: (user: IUser) => Promise<IUser> = async (user: IUser) => {
         try {
             const hashedPassword = await encryptor.hash(user.password!, 10)
             return await this.userModel.createUser({ ...user, password: hashedPassword });
@@ -35,7 +35,7 @@ export class UserController {
         }
     }
 
-    updateUserUsername: (uuid: string, username: string) => Promise<boolean> = async (uuid: string, username: string) => {
+    updateUserUsername: (uuid: string, username: string) => Promise<IUser> = async (uuid: string, username: string) => {
         try {
             return await this.userModel.updateUserUsername(uuid, username)
         }
@@ -43,7 +43,7 @@ export class UserController {
             throw new Error('UserController: updateUserUsername: ' + (err as Error).message)
         }
     }
-    updateUserPassword: (uuid: string, password: string) => Promise<boolean> = async (uuid: string, password: string) => {
+    updateUserPassword: (uuid: string, password: string) => Promise<IUser> = async (uuid: string, password: string) => {
         try {
             const hashedPassword = await encryptor.hash(password, 10)
             return await this.userModel.updateUserPassword(uuid, hashedPassword)

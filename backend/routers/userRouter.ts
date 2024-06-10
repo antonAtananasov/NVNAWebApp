@@ -75,8 +75,8 @@ userRouter.post('/', async (req, res) => { //create new user
         try {
             const foundUser = await userController.getUserByName(user.username)
             if (!foundUser) { // user does not exist in the database
-                userController.createUser(user)
-                res.status(200).send()
+
+                res.status(200).send(userController.createUser(user))
                 return
             }
             else { // user already exists

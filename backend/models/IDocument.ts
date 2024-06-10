@@ -13,3 +13,6 @@ export interface IDocument extends RowDataPacket { // how a row from the databas
     lastAccessedDate?: string //dates are received as strings
     size?: number //file size in MB (0 for folder)
 }
+export interface IDocumentSize extends RowDataPacket {
+    size: number
+}
