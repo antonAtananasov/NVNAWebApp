@@ -67,6 +67,23 @@ export class DocumentModel extends DB {
         }
     }
 
+    getFolderContents: (uuid: string) => Promise<IDocument[]> = async (uuid: string) => {
+        try {
+            const folder = await this.getDocument(uuid)
+            if (!folder)
+                throw new Error('Folder not found')
+            if (!folder.isFolder)
+                throw new Error('Requested document is not a folder')
+
+            const [rows] = await this.connection.query<IDocument[]>('select * from documents where root_document_id=?', [uuid])
+            return rows
+        }
+        catch (err) {
+            throw new Error('Database error at getTotalDocumentsSizeByUser')
+        }
+
+    }
+
     createDocument: (document: any) => Promise<boolean> = async (document: any) => {
         try {
             await this.connection.query('insert into documents (uuid,owner_uuid,format,content,root_document_uuid,isFolder,size) values (?,?,?,?,?,?,?)', [
