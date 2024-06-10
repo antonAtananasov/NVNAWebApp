@@ -35,6 +35,7 @@ export class UserModel extends DB {
 
     createUser: (user: any) => Promise<void> = async (user: any) => {
         try {
+
             await this.connection.query('insert into users (uuid,username,password) values (?,?,?)', [uuidv4(), user.username, user.password])
         }
         catch (err) {

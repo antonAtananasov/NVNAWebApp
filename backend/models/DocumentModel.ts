@@ -1,6 +1,7 @@
 import { DB } from "../core/DB";
 import { IDocument } from "./IDocument";
 import { v4 as uuidv4 } from 'uuid';
+import { Permission } from "./ISharedDocument";
 
 export class DocumentModel extends DB {
 
@@ -84,7 +85,7 @@ export class DocumentModel extends DB {
 
     }
 
-    createDocument: (document: any) => Promise<boolean> = async (document: any) => {
+    createDocument: (document: any) => Promise<boolean> = async (document: IDocument) => {
         try {
             await this.connection.query('insert into documents (uuid,owner_uuid,format,content,root_document_uuid,isFolder,size) values (?,?,?,?,?,?,?)', [
                 uuidv4(),
@@ -143,6 +144,17 @@ export class DocumentModel extends DB {
         catch (err) {
             throw new Error('Database error at deleteDocument')
         }
+    }
+
+    async shareDocument(uuid: string, userUUID: string, permission: Permission): Promise<boolean> {
+        try {
+            await this.connection.query('insert into shared_documents (document_uuid, user_uuid, permission) values (?,?,?)', [uuid, userUUID, permission])
+            return true
+        }
+        catch (err) {
+            throw new Error('Database error at deleteDocument')
+        }
+
     }
 
 }
