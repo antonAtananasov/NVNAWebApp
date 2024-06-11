@@ -1,9 +1,7 @@
 import { DocumentModel } from "../models/DocumentModel";
-import { ICreateDocumentRequest, IDocument, IShareDocumentRequest, IUpdateDocumentContentRequest } from "./IDocument";
+import { ICreateDocumentRequest, IDocument, IShareDocumentRequest, IUpdateDocumentContentRequest, IPlan, IUser } from "./dtos";
 import { v4 as uuidv4 } from 'uuid'
-import { IPlan } from "./IPlan";
-import { IUser } from "./IUser";
-import { ISharedDocument } from "./IDocument";
+import { ISharedDocument } from "./dtos";
 
 enum Permission {
     READ = 'read',

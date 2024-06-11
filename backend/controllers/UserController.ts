@@ -1,4 +1,4 @@
-import { IUser } from "./IUser";
+import { IUser } from "./dtos";
 import { UserModel } from "../models/UserModel";
 import encryptor from 'bcrypt';
 

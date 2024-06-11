@@ -1,8 +1,7 @@
 import { Router } from "express";
 import { UserAuthenticator } from "../controllers/UserAuthenticator";
 import { DocumentController } from "../controllers/DocumentController";
-import { ICreateDocumentRequest, IDocument, IShareDocumentRequest, IUpdateDocumentContentRequest } from "../controllers/IDocument";
-import { IUserSession } from "../controllers/IUser";
+import { ICreateDocumentRequest, IDocument, IShareDocumentRequest, IUpdateDocumentContentRequest, IUserSession } from "../controllers/dtos";
 
 const documentRouter = Router()
 const userAuthenticator = new UserAuthenticator()

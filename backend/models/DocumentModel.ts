@@ -4,7 +4,7 @@ import { IPlan } from "./IPlan";
 import { v4 as uuidv4 } from 'uuid';
 import { ISharedDocument, Permission } from "./ISharedDocument";
 import { IUser } from "./IUser";
-import { IRenameDocumentRequest, IShareDocumentRequest, IUpdateDocumentContentRequest } from "../controllers/IDocument";
+import { IRenameDocumentRequest, IShareDocumentRequest, IUpdateDocumentContentRequest } from "../controllers/dtos";
 
 
 export class DocumentModel extends DB {

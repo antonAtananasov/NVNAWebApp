@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { UserController } from "../controllers/UserController";
-import { IUser, IUserChangeCredentialsRequest, IUserCredentials, IUserSession } from "../controllers/IUser";
+import { IUser, IUserChangeCredentialsRequest, IUserCredentials, IUserSession } from "../controllers/dtos";
 import { UserAuthenticator } from "../controllers/UserAuthenticator";
 
 const userRouter = Router()
