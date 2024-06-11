@@ -1,0 +1,66 @@
+.container {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.row {
+    width: 100%;
+}
+
+.editor-container {
+    height: calc(100vh - 80px); /* Adjust based on your toolbar and padding height */
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.editor-input {
+    height: 1123px; /* Height of A4 in pixels */
+    width: 794px; /* Width of A4 in pixels */
+    box-sizing: border-box;
+    background: white; /* Background color to simulate a paper */
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.ql-custom-button {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px; /* Adjust button border radius */
+    padding: 10px 20px; /* Adjust button padding */
+    font-size: 16px; /* Adjust button font size */
+    width: 150px; /* Set button width */
+    text-align: center; /* Center the text */
+    margin-right: 10px; /* Add margin between buttons */
+}
+
+.ql-custom-button:hover,
+.ql-custom-button:focus {
+    background-color: #0056b3;
+}
+
+#toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Adjust gap between buttons */
+}
+
+.dropdown-menu .form-control-file {
+    display: inline-block;
+    padding: 8px;
+    cursor: pointer;
+    color: #007bff;
+    background-color: transparent;
+    border: none;
+}
+
+.dropdown-menu .form-control-file:hover,
+.dropdown-menu .form-control-file:focus {
+    color: #0056b3;
+}
