@@ -14,7 +14,8 @@
     height: calc(100vh - 80px); /* Adjust based on your toolbar and padding height */
     overflow: auto;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 .editor-input {
@@ -25,6 +26,15 @@
     padding: 20px;
     border: 1px solid #ccc;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.editor-input.first-page {
+    margin-top: 10px; /* Gap before the first page */
+    margin-bottom: 20px; /* Space between pages */
+}
+
+.editor-input:not(.first-page) {
+    margin-bottom: 20px; /* Space between pages */
 }
 
 .ql-custom-button {

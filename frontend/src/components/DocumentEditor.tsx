@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { saveAs } from 'file-saver';
@@ -6,7 +6,7 @@ import jsPDF from 'jspdf';
 import { Document, Packer, Paragraph } from 'docx';
 import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
-import { ButtonGroup, Dropdown, DropdownButton, Container, Row, Col, Button } from 'react-bootstrap';
+import { ButtonGroup, Dropdown, DropdownButton, Container, Row, Col } from 'react-bootstrap';
 import './DocumentEditor.css';
 
 const CustomToolbar: React.FC<{
@@ -15,8 +15,6 @@ const CustomToolbar: React.FC<{
     handleImportDoc: (event: React.ChangeEvent<HTMLInputElement>) => void,
     handleImportPDF: (event: React.ChangeEvent<HTMLInputElement>) => void,
 }> = ({ handleSaveDoc, handleSavePDF, handleImportDoc, handleImportPDF }) => {
-    const buttonLabels: string[] = [];
-
     return (
         <div id="toolbar">
             <select className="ql-header" defaultValue="" onChange={e => e.persist()}>
@@ -84,13 +82,14 @@ const modules = {
 };
 
 const DocumentEditor: React.FC = () => {
-    const [value, setValue] = useState<string>('');
+    const [pages, setPages] = useState<string[]>(['']);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const handleSaveDoc = async () => {
         const doc = new Document({
-            sections: [{
-                children: [new Paragraph(value)]
-            }]
+            sections: pages.map(page => ({
+                children: [new Paragraph(page)]
+            }))
         });
         const blob = await Packer.toBlob(doc);
         saveAs(blob, 'document.docx');
@@ -98,7 +97,12 @@ const DocumentEditor: React.FC = () => {
 
     const handleSavePDF = async () => {
         const doc = new jsPDF();
-        doc.text(value, 10, 10);
+        pages.forEach((page, index) => {
+            if (index > 0) {
+                doc.addPage();
+            }
+            doc.text(page, 10, 10);
+        });
         doc.save('document.pdf');
     };
 
@@ -107,7 +111,7 @@ const DocumentEditor: React.FC = () => {
         if (file) {
             const arrayBuffer = await file.arrayBuffer();
             const result = await mammoth.convertToHtml({ arrayBuffer });
-            setValue(result.value);
+            setPages([result.value]);
         }
     };
 
@@ -124,9 +128,38 @@ const DocumentEditor: React.FC = () => {
                 const pageText = textContent.items.map((item: any) => item.str).join(' ');
                 extractedText += pageText + '\n';
             }
-            setValue(extractedText);
+            setPages([extractedText]);
         }
     };
+
+    const handlePageChange = (content: string, index: number) => {
+        const newPages = [...pages];
+        newPages[index] = content;
+        if (content.length > 2000 && index === pages.length - 1) { // Adjust the length check as needed
+            newPages.push('');
+        }
+        setPages(newPages);
+    };
+
+    useEffect(() => {
+        const container = containerRef.current;
+        if (container) {
+            const quills = container.querySelectorAll('.editor-input .ql-editor');
+            quills.forEach((quill: any) => {
+                quill.addEventListener('input', () => {
+                    if (quill.scrollHeight > quill.clientHeight) {
+                        setPages((prevPages) => {
+                            const newPages = [...prevPages];
+                            if (newPages[newPages.length - 1] !== '') {
+                                newPages.push('');
+                            }
+                            return newPages;
+                        });
+                    }
+                });
+            });
+        }
+    }, [pages]);
 
     return (
         <Container fluid className="p-3">
@@ -141,14 +174,17 @@ const DocumentEditor: React.FC = () => {
                 </Col>
             </Row>
             <Row>
-                <Col xs={12} className="mb-2 editor-container">
-                    <ReactQuill
-                        theme='snow'
-                        value={value}
-                        onChange={setValue}
-                        className='editor-input'
-                        modules={modules}
-                    />
+                <Col xs={12} className="mb-2 editor-container" ref={containerRef}>
+                    {pages.map((page, index) => (
+                        <ReactQuill
+                            key={index}
+                            theme='snow'
+                            value={page}
+                            onChange={(content) => handlePageChange(content, index)}
+                            className={`editor-input ${index === 0 ? 'first-page' : ''}`}
+                            modules={modules}
+                        />
+                    ))}
                 </Col>
             </Row>
         </Container>
@@ -156,29 +192,3 @@ const DocumentEditor: React.FC = () => {
 }
 
 export default DocumentEditor;
-
-
-// import React from 'react';
-// import ReactQuill from 'react-quill';
-// import 'react-quill/dist/quill.snow.css';
-// import { saveAs } from 'file-saver';
-// import jsPDF from 'jspdf';
-// import { Document, Packer, Paragraph } from 'docx';
-// import mammoth from 'mammoth';
-// import * as pdfjsLib from 'pdfjs-dist';
-// import { ButtonGroup, Dropdown, DropdownButton, Container, Row, Col, Button } from 'react-bootstrap';
-//
-// const DocumentEditor = () => {
-//     return (
-//         <Container>
-//             <Row>
-//                 <Col>
-//                     <h1>Document Editor</h1>
-//                     {/* Add your document editor functionality here */}
-//                 </Col>
-//             </Row>
-//         </Container>
-//     );
-// };
-//
-// export default DocumentEditor;
