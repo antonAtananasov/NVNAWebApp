@@ -177,7 +177,7 @@ documentRouter.get('/', (req, res) => {
                 const plan = await documentController.getPlan(user.planId || 0)
                 if (plan.storage > occupiedStorage + (newDocument.content?.length || 0)) {
 
-                    const document = await documentController.createDocument(userUUID, newDocument.name, newDocument.content, newDocument.isFolder || false, newDocument.content?.length)
+                    const document = await documentController.createDocument(newDocument)
                     res.status(200).send(JSON.stringify(document))
                     return
                 }
@@ -258,7 +258,7 @@ documentRouter.get('/', (req, res) => {
             }
             if (userHasActiveSession && session.uuid == doc.ownerUUID) {
 
-                const updatedDoc = await documentController.updateDocumentContent(updateDocument.uuid, updateDocument.content)
+                const updatedDoc = await documentController.updateDocumentContent(updateDocument)
                 if (updatedDoc) {
                     res.status(200).send(updatedDoc)
                     return

@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export class UserModel extends DB {
 
-    getAllUsers: () => Promise<IUser[]> = async () => {
+    async getAllUsers(): Promise<IUser[]> {
         try {
             const [rows] = await this.connection.query<IUser[]>('select * from users', [])
             return rows
@@ -13,7 +13,7 @@ export class UserModel extends DB {
             throw new Error('Database error at getAllUsers')
         }
     }
-    getUser: (uuid: string) => Promise<IUser> = async (uuid: string) => {
+    async getUser(uuid: string): Promise<IUser> {
         try {
             const [rows] = await this.connection.query<IUser[]>('select * from users where uuid=? limit 1', [uuid])
             return rows[0] as IUser
@@ -23,7 +23,7 @@ export class UserModel extends DB {
         }
     }
 
-    getUserByName: (username: string) => Promise<IUser> = async (username: string) => {
+    async getUserByName(username: string): Promise<IUser> {
         try {
             const [rows] = await this.connection.query<IUser[]>('select * from users where username=? limit 1', [username])
             return rows[0] as IUser
@@ -33,7 +33,7 @@ export class UserModel extends DB {
         }
     }
 
-    createUser: (user: any) => Promise<IUser> = async (user: any) => {
+    async createUser(user: any): Promise<IUser> {
         try {
 
             await this.connection.query('insert into users (uuid,username,password) values (?,?,?)', [uuidv4(), user.username, user.password])
@@ -44,7 +44,7 @@ export class UserModel extends DB {
         }
     }
 
-    updateUserUsername: (uuid: string, newUsername: string) => Promise<IUser> = async (uuid: string, newUsername: string) => {
+    async updateUserUsername(uuid: string, newUsername: string): Promise<IUser> {
         try {
             await this.connection.query('update users set username=? where uuid=? limit 1', [newUsername, uuid])
             return await this.getUser(uuid)
@@ -55,7 +55,7 @@ export class UserModel extends DB {
 
     }
 
-    updateUserPassword: (uuid: string, newPassword: string) => Promise<IUser> = async (uuid: string, newPassword: string) => {
+    async updateUserPassword(uuid: string, newPassword: string): Promise<IUser> {
         try {
             await this.connection.query('update users set password=? where uuid=? limit 1', [newPassword, uuid])
             return await this.getUser(uuid)
@@ -66,7 +66,7 @@ export class UserModel extends DB {
 
     }
 
-    deleteUser: (uuid: string) => Promise<boolean> = async (uuid: string) => {
+    async deleteUser(uuid: string): Promise<boolean> {
         try {
             await this.connection.query('delete from users where uuid=? limit 1', [uuid])
             return true

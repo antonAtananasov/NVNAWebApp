@@ -18,7 +18,6 @@ export interface ICreateDocumentRequest {
     content?: string
     rootDocumentUUID?: string
     isFolder?: boolean
-
 }
 export interface IShareDocumentRequest {
     documentUUID: string,
@@ -38,4 +37,7 @@ export interface ISharedDocument { //binds a document id to another user's id th
 export enum Permission {
     READ = 'read',
     WRITE = 'write',
+}
+export interface IRenameDocumentRequest {
+    uuid: string, newName: string
 }

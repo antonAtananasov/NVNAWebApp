@@ -1,5 +1,5 @@
 import { DocumentModel } from "../models/DocumentModel";
-import { IDocument, IShareDocumentRequest } from "./IDocument";
+import { ICreateDocumentRequest, IDocument, IShareDocumentRequest, IUpdateDocumentContentRequest } from "./IDocument";
 import { v4 as uuidv4 } from 'uuid'
 import { IPlan } from "./IPlan";
 import { IUser } from "./IUser";
@@ -15,18 +15,16 @@ export class DocumentController {
         this.documentModel = new DocumentModel();
     }
 
-    async createDocument(ownerUUID: string, name: string, content: string | undefined, isFolder: boolean, size: number | undefined): Promise<IDocument> {
-        content ||= ''
-        size ||= 0
-        const document: IDocument = {
+    async createDocument(docReq: ICreateDocumentRequest): Promise<IDocument> {
+        const doc: IDocument = {
+            ...docReq,
             uuid: uuidv4(),
-            ownerUUID,
-            name,
-            content,
-            isFolder
-        } as IDocument
+            content: docReq.content || '',
+            isFolder: docReq.isFolder || false,
+            size: docReq.content?.length || 0
+        }
         try {
-            return await this.documentModel.createDocument(document) as IDocument
+            return await this.documentModel.createDocument(doc) as IDocument
         }
         catch (err) {
             throw new Error('DocumentController: createDocument: ' + (err as Error).message)
@@ -108,9 +106,9 @@ export class DocumentController {
             throw new Error('DocumentController: getUser: ' + (err as Error).message)
         }
     }
-    async updateDocumentContent(uuid: string, content: string): Promise<IDocument> {
+    async updateDocumentContent(updateReq: IUpdateDocumentContentRequest): Promise<IDocument> {
         try {
-            return await this.documentModel.updateDocumentContent(uuid, content)
+            return await this.documentModel.updateDocumentContent(updateReq)
         }
         catch (err) {
             throw new Error('DocumentController: getUser: ' + (err as Error).message)

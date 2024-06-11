@@ -4,12 +4,12 @@ import { IPlan } from "./IPlan";
 import { v4 as uuidv4 } from 'uuid';
 import { ISharedDocument, Permission } from "./ISharedDocument";
 import { IUser } from "./IUser";
-import { IShareDocumentRequest } from "../controllers/IDocument";
+import { IRenameDocumentRequest, IShareDocumentRequest, IUpdateDocumentContentRequest } from "../controllers/IDocument";
 
 
 export class DocumentModel extends DB {
 
-    getAllDocuments: () => Promise<IDocument[]> = async () => {
+    async getAllDocuments(): Promise<IDocument[]> {
         try {
             const [rows] = await this.connection.query<IDocument[]>('SELECT uuid,owner_uuid,name,format,root_document_uuid,is_folder,creation_date,last_modified_date,last_accessed_date, d.size FROM documents', [])
             return rows
@@ -19,7 +19,7 @@ export class DocumentModel extends DB {
         }
     }
 
-    getDocument: (uuid: string) => Promise<IDocument> = async (uuid: string) => {
+    async getDocument(uuid: string): Promise<IDocument> {
         try {
             const [rows] = await this.connection.query<IDocument[]>('select * from documents where uuid=? limit 1', [uuid])
             return rows[0]
@@ -29,7 +29,7 @@ export class DocumentModel extends DB {
         }
     }
 
-    getSharedDocumentsByUser: (uuid: string) => Promise<IDocument[]> = async (uuid: string) => {
+    async getSharedDocumentsByUser(uuid: string): Promise<IDocument[]> {
         try {
             const [rows] = await this.connection.query<IDocument[]>(
                 'SELECT d.uuid,d.owner_uuid,d.name,d.format,d.root_document_uuid,d.is_folder,d.creation_date,d.last_modified_date,d.last_accessed_date, d.size FROM documents d left JOIN shared_documents s ON s.document_uuid = d.uuid where d.owner_uuid=?',
@@ -41,7 +41,7 @@ export class DocumentModel extends DB {
             throw new Error('Database error at getSharedDocumentsByUser')
         }
     }
-    getReceivedDocumentsByUser: (uuid: string) => Promise<IDocument[]> = async (uuid: string) => {
+    async getReceivedDocumentsByUser(uuid: string): Promise<IDocument[]> {
         try {
             const [rows] = await this.connection.query<IDocument[]>(
                 'SELECT d.uuid,d.owner_uuid,d.name,d.format,d.root_document_uuid,d.is_folder,d.creation_date,d.last_modified_date,d.last_accessed_date, d.size FROM documents d JOIN shared_documents s ON s.document_uuid = d.uuid where s.user_uuid = ? ',
@@ -54,7 +54,7 @@ export class DocumentModel extends DB {
         }
     }
 
-    getDocumentsByUser: (uuid: string, includeShared?: boolean) => Promise<IDocument[]> = async (uuid: string, includeShared?: boolean) => {
+    async getDocumentsByUser(uuid: string, includeShared?: boolean): Promise<IDocument[]> {
         try {
             let foundDocuments: IDocument[] = [];
             const [ownedDocuments] = await this.connection.query<IDocument[]>(
@@ -74,7 +74,7 @@ export class DocumentModel extends DB {
         }
     }
 
-    getTotalDocumentsSizeByUser: (uuid: string) => Promise<number> = async (uuid: string) => {
+    async getTotalDocumentsSizeByUser(uuid: string): Promise<number> {
         try {
             const [rows] = await this.connection.query<IDocumentSize[]>('select sum(size) from documents where owner_uuid=? group by owner_uuid limit 1', [uuid])
             return rows[0].size
@@ -84,7 +84,7 @@ export class DocumentModel extends DB {
         }
     }
 
-    getFolderContents: (uuid: string) => Promise<IDocument[]> = async (uuid: string) => {
+    async getFolderContents(uuid: string): Promise<IDocument[]> {
         try {
             const folder = await this.getDocument(uuid)
             if (!folder)
@@ -100,7 +100,7 @@ export class DocumentModel extends DB {
         }
     }
 
-    createDocument: (document: any) => Promise<IDocument> = async (document: IDocument) => {
+    async createDocument(document: any): Promise<IDocument> {
         try {
             const uuid = uuidv4()
             await this.connection.query('insert into documents (uuid,owner_uuid,format,content,root_document_uuid,isFolder,size) values (?,?,?,?,?,?,?)', [
@@ -120,20 +120,20 @@ export class DocumentModel extends DB {
         }
     }
 
-    updateDocumentName: (uuid: string, newName: string) => Promise<IDocument> = async (uuid: string, newName: string) => {
+    async updateDocumentName(renReq: IRenameDocumentRequest) {
         try {
-            await this.connection.query('update documents set name=?,last_modified_date=current_timestamp where uuid=? limit 1', [newName, uuid])
-            return await this.getDocument(uuid)
+            await this.connection.query('update documents set name=?,last_modified_date=current_timestamp where uuid=? limit 1', [renReq.newName, renReq.uuid])
+            return await this.getDocument(renReq.uuid)
         }
         catch (err) {
             throw new Error('Database error at updateDocumentName')
         }
     }
 
-    updateDocumentContent: (uuid: string, newContent: string) => Promise<IDocument> = async (uuid: string, newContent: string) => {
+    async updateDocumentContent(updateContentReq: IUpdateDocumentContentRequest): Promise<IDocument> {
         try {
-            await this.connection.query('update documents set content=?,last_modified_date=current_timestamp,size=? where uuid=? limit 1', [newContent, uuid, newContent.length])
-            return await this.getDocument(uuid)
+            await this.connection.query('update documents set content=?,last_modified_date=current_timestamp,size=? where uuid=? limit 1', [updateContentReq.content, updateContentReq.uuid, updateContentReq.content.length])
+            return await this.getDocument(updateContentReq.uuid)
         }
         catch (err) {
             throw new Error('Database error at updateDocumentContent')
