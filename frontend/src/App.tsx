@@ -1,11 +1,11 @@
 
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Row, Col, Nav, Navbar } from "react-bootstrap";
-import RegisterAccountForm from './components/RegisterAccountForm';
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import NotFound from "./components/NotFound.tsx";
-import FileControls from "./components/FileControls.tsx";
+// import './App.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import { Container, Row, Col, Nav, Navbar } from "react-bootstrap";
+// import RegisterAccountForm from './components/RegisterAccountForm';
+// import { BrowserRouter, Route, Routes } from "react-router-dom";
+// import NotFound from "./components/NotFound.tsx";
+// import FileControls from "./components/FileControls.tsx";
 
 // import { useState } from 'react';
 // import './App.css';
@@ -117,42 +117,73 @@ import FileControls from "./components/FileControls.tsx";
 
 // export default App;
 
+// const App: React.FC = () => {
+//
+//     return <>
+//         <Navbar bg="dark" data-bs-theme="dark">
+//             <Container>
+//                 <Navbar.Brand href="#home">Navbar</Navbar.Brand>
+//                 <Nav className="me-auto">
+//                     <Nav.Link href="#home">Home</Nav.Link>
+//                     <Nav.Link href="#features">Features</Nav.Link>
+//                     <Nav.Link href="#pricing">Pricing</Nav.Link>
+//                 </Nav>
+//             </Container>
+//         </Navbar>
+//
+//         <Container data-bs-theme="light position" fluid className="w-100">
+//             <Row className="w-100 mt-4 mb-4">
+//                 <Col className='col-2 border-end'>Left panel</Col>
+//                 <Col className='col-8'>
+//                     <Row className='w-100 p-3'>
+//                         <BrowserRouter>
+//                             <Routes>
+//                                 <Route path={"/login"} element={<RegisterAccountForm isLogin={false}></RegisterAccountForm>} />
+//                                 <Route path={"/"} element={<br />} />
+//                                 <Route path={"*"} element={<NotFound />} />
+//                                 <Route path={"/filecontrols"} element={<FileControls />} />
+//                             </Routes>
+//                         </BrowserRouter>
+//                     </Row>
+//                 </Col>
+//                 <Col className='col-2 border-start'>Right panel</Col>
+//             </Row>
+//             <Row className='w-100 p-3 border-top'>Footer</Row>
+//
+//         </Container>
+//     </>
+//
+// }
+//
+// export default App
+
+
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import NavBar from './components/NavBar';
+import DocumentEditor from './components/DocumentEditor';
+import FileControls from './components/FileControls';
+import LoginSignup from './components/LoginSignup';
+import NotFound from './components/NotFound';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 const App: React.FC = () => {
-
-    return <>
-        <Navbar bg="dark" data-bs-theme="dark">
-            <Container>
-                <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-                <Nav className="me-auto">
-                    <Nav.Link href="#home">Home</Nav.Link>
-                    <Nav.Link href="#features">Features</Nav.Link>
-                    <Nav.Link href="#pricing">Pricing</Nav.Link>
-                </Nav>
-            </Container>
-        </Navbar>
-
-        <Container data-bs-theme="light position" fluid className="w-100">
-            <Row className="w-100 mt-4 mb-4">
-                <Col className='col-2 border-end'>Left panel</Col>
-                <Col className='col-8'>
-                    <Row className='w-100 p-3'>
-                        <BrowserRouter>
-                            <Routes>
-                                <Route path={"/login"} element={<RegisterAccountForm isLogin={false}></RegisterAccountForm>} />
-                                <Route path={"/"} element={<br />} />
-                                <Route path={"*"} element={<NotFound />} />
-                                <Route path={"/filecontrols"} element={<FileControls />} />
-                            </Routes>
-                        </BrowserRouter>
-                    </Row>
-                </Col>
-                <Col className='col-2 border-start'>Right panel</Col>
-            </Row>
-            <Row className='w-100 p-3 border-top'>Footer</Row>
-
-        </Container>
-    </>
-
+    return (
+        <Router>
+            <NavBar />
+            <Routes>
+                <Route path="/" element={<FileControls />} />
+                <Route path="/editor" element={<DocumentEditor />} />
+                <Route path="/login-signup" element={<LoginSignup />} />
+                <Route path="*" element={<NotFound />} />
+            </Routes>
+        </Router>
+    );
 }
 
-export default App
+export default App;
+
+
+
+
+

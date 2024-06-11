@@ -1,18 +1,44 @@
-.custom-navbar {
-    background: linear-gradient(to right, #6a11cb, #2575fc);
+
+.navbar-gradient {
+    width: 100%; /* Ensure the Navbar takes full width */
+    background: #007bff; /* Apply gradient directly to the Navbar */
+    margin: 0; /* Remove any margin to ensure full width */
+    border-radius: 0 0 20px 20px; /* Add border-radius to bottom-right and bottom-left corners */
 }
 
-.custom-navbar .navbar-brand,
-.custom-navbar .nav-link,
-.custom-navbar .nav-dropdown {
-    color: #fff;
+.nav-bold .nav-item {
+    font-weight: bold;
+    text-align: center; /* Center align the text within links */
+    margin-right: 20px; /* Add gap between buttons */
+    border-radius: 30px; /* Add border-radius to each button */
 }
 
-.custom-navbar .nav-link:hover,
-.custom-navbar .nav-dropdown:hover {
-    color: #ccc;
+.nav-bold .nav-item.active-link {
+    background-color: white;
+    color: #007bff !important; /* Change text color to #007bff */
 }
 
-.custom-navbar .navbar-toggler-icon {
-    background-color: #fff;
+.nav-bold .nav-item .dropdown-menu {
+    text-align: center; /* Center align the text within the dropdown menu */
+}
+
+@media (min-width: 992px) {
+    .navbar-collapse {
+        justify-content: flex-end; /* Right align text on larger screens */
+    }
+}
+
+@media (max-width: 991px) {
+    .navbar-toggler {
+        margin: 0 auto; /* Center the burger menu icon */
+    }
+
+    .navbar-collapse {
+        text-align: center; /* Center align text within the collapse */
+    }
+
+    .nav-bold .nav-item {
+        margin-right: 0; /* Remove margin for buttons in mobile view */
+        margin-bottom: 10px; /* Add margin at the bottom for better spacing */
+    }
 }

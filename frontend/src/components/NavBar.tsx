@@ -1,76 +1,52 @@
-// import React from 'react';
-// import { Navbar, Nav, NavDropdown, Container } from 'react-bootstrap';
-// import { FaUserCircle } from 'react-icons/fa';
-// import { Link } from 'react-router-dom';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import './NavBar.css';
-//
-// const NavBar: React.FC = () => {
-//     return (
-//         <Navbar className="custom-navbar" expand="lg">
-//             <Container>
-//                 <Navbar.Brand as={Link} to="/">MyApp</Navbar.Brand>
-//                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
-//                 <Navbar.Collapse id="basic-navbar-nav">
-//                     <Nav className="ml-auto">
-//                         <Nav.Link as={Link} to="/">Home</Nav.Link>
-//                         <Nav.Link as={Link} to="/gallery">Gallery</Nav.Link>
-//                         <Nav.Link as={Link} to="/editor">Editor</Nav.Link>
-//                         <NavDropdown title={<FaUserCircle size={24} />} id="basic-nav-dropdown">
-//                             <NavDropdown.Divider />
-//                             <NavDropdown.Item as={Link} to="/login-signup">Exit</NavDropdown.Item>
-//                         </NavDropdown>
-//                     </Nav>
-//                 </Navbar.Collapse>
-//             </Container>
-//         </Navbar>
-//     );
-// };
-//
-// export default NavBar;
-
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import { FaUserCircle } from 'react-icons/fa';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './NavBar.css';
 
-function ColorSchemesExample() {
+const NavBar: React.FC = () => {
+    const location = useLocation();
+
     return (
-        <>
-            <Navbar bg="dark" data-bs-theme="dark">
-                <Container>
-                    <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-                    <Nav className="me-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#features">Features</Nav.Link>
-                        <Nav.Link href="#pricing">Pricing</Nav.Link>
+        <Navbar expand="lg" className="navbar-gradient">
+            <Container fluid>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" className="mx-auto" />
+                <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+                    <Nav className="nav-bold mx-auto mx-lg-0">
+                        <Nav.Link
+                            as={Link}
+                            to="/"
+                            className={`nav-item ${location.pathname === '/' ? 'active-link' : ''}`}
+                        >
+                            Home
+                        </Nav.Link>
+                        <Nav.Link
+                            as={Link}
+                            to="/editor"
+                            className={`nav-item ${location.pathname === '/editor' ? 'active-link' : ''}`}
+                        >
+                            Editor
+                        </Nav.Link>
                     </Nav>
-                </Container>
-            </Navbar>
-            <br />
-            <Navbar bg="primary" data-bs-theme="dark">
-                <Container>
-                    <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-                    <Nav className="me-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#features">Features</Nav.Link>
-                        <Nav.Link href="#pricing">Pricing</Nav.Link>
+                    <Nav>
+                        <NavDropdown title={<FaUserCircle size={24} />} id="basic-nav-dropdown" className="nav-item">
+                            <NavDropdown.Item
+                                as={Link}
+                                to="/login-signup"
+                                className={`nav-item ${location.pathname === '/login-signup' ? 'active-link' : ''}`}
+                            >
+                                Exit
+                            </NavDropdown.Item>
+                        </NavDropdown>
                     </Nav>
-                </Container>
-            </Navbar>
-
-            <br />
-            <Navbar bg="light" data-bs-theme="light">
-                <Container>
-                    <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-                    <Nav className="me-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#features">Features</Nav.Link>
-                        <Nav.Link href="#pricing">Pricing</Nav.Link>
-                    </Nav>
-                </Container>
-            </Navbar>
-        </>
+                </Navbar.Collapse>
+            </Container>
+        </Navbar>
     );
 }
 
-export default ColorSchemesExample;
+export default NavBar;
