@@ -4,6 +4,7 @@ import { IPlan } from "./IPlan";
 import { v4 as uuidv4 } from 'uuid';
 import { ISharedDocument, Permission } from "./ISharedDocument";
 import { IUser } from "./IUser";
+import { IShareDocumentRequest } from "../controllers/IDocument";
 
 
 export class DocumentModel extends DB {
@@ -131,7 +132,7 @@ export class DocumentModel extends DB {
 
     updateDocumentContent: (uuid: string, newContent: string) => Promise<IDocument> = async (uuid: string, newContent: string) => {
         try {
-            await this.connection.query('update documents set content=?,last_modified_date=current_timestamp where uuid=? limit 1', [newContent, uuid])
+            await this.connection.query('update documents set content=?,last_modified_date=current_timestamp,size=? where uuid=? limit 1', [newContent, uuid, newContent.length])
             return await this.getDocument(uuid)
         }
         catch (err) {
@@ -159,13 +160,12 @@ export class DocumentModel extends DB {
         }
     }
 
-    async shareDocument(uuid: string, userUUID: string, permission: Permission): Promise<IDocument> {
-        const sharedDocumentRecord: ISharedDocument = {
-            documentUUID: uuid, userUUID, permission
-        } as ISharedDocument
+    async shareDocument(shareReq: IShareDocumentRequest): Promise<IDocument> {
+        const [rows] = await this.connection.query<IUser[]>('select * from users where username=? limit 1', [shareReq.username])
+        const targetUserUUID = rows[0].uuid
         try {
-            await this.connection.query('insert into shared_documents (document_uuid, user_uuid, permission) values (?,?,?)', [uuid, userUUID, permission])
-            return await this.getDocument(uuid)
+            await this.connection.query('insert into shared_documents (document_uuid, user_uuid, permission) values (?,?,?)', [shareReq.documentUUID, targetUserUUID, shareReq.permission])
+            return await this.getDocument(shareReq.documentUUID)
         }
         catch (err) {
             throw new Error('Database error at shareDocument')
@@ -193,6 +193,15 @@ export class DocumentModel extends DB {
         try {
             const [rows] = await this.connection.query<IUser[]>('select * from users uuid=?', [uuid])
             return rows[0] as IUser
+        }
+        catch (err) {
+            throw new Error('Database error at getUser')
+        }
+    }
+    async unshareDocument(uuid: string): Promise<ISharedDocument> {
+        try {
+            const [rows] = await this.connection.query<ISharedDocument[]>('delete from shared_documents where document_uuid=?', [uuid])
+            return rows[0] as ISharedDocument
         }
         catch (err) {
             throw new Error('Database error at getUser')

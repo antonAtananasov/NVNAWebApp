@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { UserAuthenticator } from "../controllers/UserAuthenticator";
 import { DocumentController } from "../controllers/DocumentController";
-import { IDocument } from "../controllers/IDocument";
+import { ICreateDocumentRequest, IDocument, IShareDocumentRequest, IUpdateDocumentContentRequest } from "../controllers/IDocument";
 import { IUserSession } from "../controllers/IUser";
 
 const documentRouter = Router()
@@ -13,9 +13,8 @@ documentRouter.get('/', (req, res) => {
 
     //GET
     //read document
-    documentRouter.get('/:userUUID/:documentUUID', async (req, res) => {
+    documentRouter.get('/:documentUUID', async (req, res) => {
         const documentUUID = req.params.documentUUID
-        const userUUID = req.params.userUUID
         try {
             if (!req.cookies.session) {
                 res.status(401).send('Session not found or expired')
@@ -25,10 +24,12 @@ documentRouter.get('/', (req, res) => {
 
             const userHasActiveSession = await userAuthenticator.authenticateWithSession(session)
             if (userHasActiveSession) {
+                const userUUID = session.uuid
+
                 const document = await documentController.getDocument(documentUUID) as IDocument
                 if (document) {
                     if (!document.isFolder) {
-                        if (document.ownerUUID === userUUID && session.uuid === userUUID) {
+                        if (document.ownerUUID === userUUID && session.uuid == userUUID) {
                             res.status(200).send(JSON.stringify(document))
                             return
                         }
@@ -55,9 +56,8 @@ documentRouter.get('/', (req, res) => {
     })
 
     //get folder contents
-    documentRouter.get('/:userUUID/folder/:documentUUID', async (req, res) => {
+    documentRouter.get('/folder/:documentUUID', async (req, res) => {
         const documentUUID = req.params.documentUUID
-        const userUUID = req.params.userUUID
         try {
             if (!req.cookies.session) {
                 res.status(401).send('Session not found or expired')
@@ -67,10 +67,12 @@ documentRouter.get('/', (req, res) => {
 
             const userHasActiveSession = await userAuthenticator.authenticateWithSession(session)
             if (userHasActiveSession) {
+                const userUUID = session.uuid
+
                 const document = await documentController.getDocument(documentUUID) as IDocument
                 if (document) {
                     if (document.isFolder) {
-                        if (document.ownerUUID === userUUID && session.uuid === userUUID) {
+                        if (document.ownerUUID === userUUID && session.uuid == userUUID) {
                             const folderContents = documentController.getFolderContents(documentUUID)
                             res.status(200).send(JSON.stringify(folderContents))
                             return
@@ -152,8 +154,15 @@ documentRouter.get('/', (req, res) => {
 
     //POST
     //createDocument
-    documentRouter.post('/:userUUID/', async (req, res) => {
+    documentRouter.post('/:userUUID', async (req, res) => {
         const userUUID = req.params.userUUID
+        const newDocument: ICreateDocumentRequest = {
+            ownerUUID: userUUID,
+            name: req.body.name,
+            isFolder: req.body.isFolder,
+            content: req.body.content
+        } as IDocument
+
         try {
             if (!req.cookies.session) {
                 res.status(401).send('Session not found or expired')
@@ -162,16 +171,10 @@ documentRouter.get('/', (req, res) => {
             const session = JSON.parse(req.cookies.session) as IUserSession
 
             const userHasActiveSession = await userAuthenticator.authenticateWithSession(session)
-            if (userHasActiveSession && session.uuid === userUUID) {
+            if (userHasActiveSession && session.uuid == userUUID) {
                 const user = await documentController.getUser(userUUID)
                 const occupiedStorage = await documentController.getOccupiedStorage(userUUID)
                 const plan = await documentController.getPlan(user.planId || 0)
-                const newDocument: IDocument = {
-                    ownerUUID: userUUID,
-                    name: req.body.name,
-                    isFolder: req.body.isFolder,
-                    content: req.body.content
-                } as IDocument
                 if (plan.storage > occupiedStorage + (newDocument.content?.length || 0)) {
 
                     const document = await documentController.createDocument(userUUID, newDocument.name, newDocument.content, newDocument.isFolder || false, newDocument.content?.length)
@@ -195,15 +198,161 @@ documentRouter.get('/', (req, res) => {
     })
 
     //shareDocument
+    documentRouter.post('/share', async (req, res) => {
+        try {
+            const shareReq: IShareDocumentRequest = {
+                documentUUID: req.body.uuid,
+                username: req.body.userUUID,
+                permission: req.body.permission
+            }
+            if (!req.cookies.session) {
+                res.status(401).send('Session not found or expired')
+                return
+            }
+            const session = JSON.parse(req.cookies.session) as IUserSession
+            const userHasActiveSession = await userAuthenticator.authenticateWithSession(session)
+            const doc = await documentController.getDocument(shareReq.documentUUID)
+            if (!doc) {
+                res.status(404).send()
+            }
+            if (userHasActiveSession && session.uuid == doc.ownerUUID) {
+
+                const sharedDoc = await documentController.shareDocument(shareReq)
+                if (sharedDoc) {
+                    res.status(200).send(sharedDoc)
+                    return
+                }
+                else {
+                    res.status(500).send()
+                    return
+                }
+            }
+            else {
+                res.status(401).send()
+            }
+        }
+        catch (err) {
+            res.status(500).send("documentController: get /:userUUID/:documentUUID: " + (err as Error).message)
+            return
+        }
+    })
 
 
     //PUT
-    //updateDocument
+    //updateDocumentContent
+    documentRouter.put('/:documentUUID', async (req, res) => {
+        const updateDocument: IUpdateDocumentContentRequest = {
+            uuid: req.params.documentUUID,
+            content: req.body.newContent
+        }
+        try {
+            if (!req.cookies.session) {
+                res.status(401).send('Session not found or expired')
+                return
+            }
+            const session = JSON.parse(req.cookies.session) as IUserSession
+            const userHasActiveSession = await userAuthenticator.authenticateWithSession(session)
+            const doc = await documentController.getDocument(updateDocument.uuid)
+            if (!doc) {
+                res.status(404).send()
+            }
+            if (userHasActiveSession && session.uuid == doc.ownerUUID) {
+
+                const updatedDoc = await documentController.updateDocumentContent(updateDocument.uuid, updateDocument.content)
+                if (updatedDoc) {
+                    res.status(200).send(updatedDoc)
+                    return
+                }
+                else {
+                    res.status(500).send()
+                    return
+                }
+            }
+            else {
+                res.status(401).send()
+            }
+        }
+        catch (err) {
+            res.status(500).send("documentController: get /:userUUID/:documentUUID: " + (err as Error).message)
+            return
+        }
+
+    })
 
 
     //DELETE
     //deleteDocument
+    documentRouter.delete('/:documentUUID', async (req, res) => {
+        const documentUUID = req.params.documentUUID
+        try {
+            if (!req.cookies.session) {
+                res.status(401).send('Session not found or expired')
+                return
+            }
+            const session = JSON.parse(req.cookies.session) as IUserSession
+            const userHasActiveSession = await userAuthenticator.authenticateWithSession(session)
+            const doc = await documentController.getDocument(documentUUID)
+            if (!doc) {
+                res.status(404).send()
+            }
+            if (userHasActiveSession && session.uuid == doc.ownerUUID) {
+
+                const target = await documentController.deleteDocument(documentUUID)
+                if (target) {
+                    res.status(200).send(target)
+                    return
+                }
+                else {
+                    res.status(500).send()
+                    return
+                }
+            }
+            else {
+                res.status(401).send()
+            }
+        }
+        catch (err) {
+            res.status(500).send("documentController: get /:userUUID/:documentUUID: " + (err as Error).message)
+            return
+        }
+
+    })
     //unshareDocument
+    documentRouter.delete('/shared/:uuid', async (req, res) => {
+        const documentUUID = req.params.uuid //the id key of the share record in the database
+        try {
+            if (!req.cookies.session) {
+                res.status(401).send('Session not found or expired')
+                return
+            }
+            const session = JSON.parse(req.cookies.session) as IUserSession
+            const userHasActiveSession = await userAuthenticator.authenticateWithSession(session)
+            if (userHasActiveSession) {
+                const doc = (await documentController.getSharedDocuments(session.uuid)).find(d => d.ownerUUID == documentUUID)
+                if (!doc) {
+                    res.status(404).send()
+                }
+
+                const updatedDoc = await documentController.unshareDocument(documentUUID)
+                if (updatedDoc) {
+                    res.status(200).send(updatedDoc)
+                    return
+                }
+                else {
+                    res.status(500).send()
+                    return
+                }
+            }
+            else {
+                res.status(401).send()
+            }
+        }
+        catch (err) {
+            res.status(500).send("documentController: get /:userUUID/:documentUUID: " + (err as Error).message)
+            return
+        }
+
+    })
 
 })
 

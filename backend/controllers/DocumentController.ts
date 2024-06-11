@@ -1,11 +1,9 @@
 import { DocumentModel } from "../models/DocumentModel";
-import { IDocument } from "./IDocument";
+import { IDocument, IShareDocumentRequest } from "./IDocument";
 import { v4 as uuidv4 } from 'uuid'
-import { UserAuthenticator } from "./UserAuthenticator";
-import { PlanModel } from "../models/PlanModel";
-import { UserController } from "./UserController";
-import { IPlan } from "../models/IPlan";
+import { IPlan } from "./IPlan";
 import { IUser } from "./IUser";
+import { ISharedDocument } from "./IDocument";
 
 enum Permission {
     READ = 'read',
@@ -37,16 +35,16 @@ export class DocumentController {
 
     async getDocument(uuid: string): Promise<IDocument> {
         try {
-            return await this.documentModel.getDocument(uuid)
+            return await this.documentModel.accessDocument(uuid)
         }
         catch (err) {
             throw new Error('DocumentController: getDocument: ' + (err as Error).message)
         }
 
     }
-    async shareDocument(uuid: string, userUUID: string, permission: Permission): Promise<IDocument> {
+    async shareDocument(shareReq: IShareDocumentRequest): Promise<IDocument> {
         try {
-            return await this.documentModel.shareDocument(uuid, userUUID, permission)
+            return await this.documentModel.shareDocument(shareReq)
         }
         catch (err) {
             throw new Error('DocumentController: shareDocument: ' + (err as Error).message)
@@ -62,9 +60,9 @@ export class DocumentController {
             throw new Error('DocumentController: getFolderContents: ' + (err as Error).message)
         }
     }
-    async getSharedDocuments(uuid: string): Promise<IDocument[]> {
+    async getSharedDocuments(userUUID: string): Promise<IDocument[]> {
         try {
-            return await this.documentModel.getSharedDocumentsByUser(uuid)
+            return await this.documentModel.getSharedDocumentsByUser(userUUID)
         }
         catch (err) {
             throw new Error('DocumentController: getSharedDocuments: ' + (err as Error).message)
@@ -105,6 +103,31 @@ export class DocumentController {
     async getUser(uuid: string): Promise<IUser> {
         try {
             return await this.documentModel.getUser(uuid)
+        }
+        catch (err) {
+            throw new Error('DocumentController: getUser: ' + (err as Error).message)
+        }
+    }
+    async updateDocumentContent(uuid: string, content: string): Promise<IDocument> {
+        try {
+            return await this.documentModel.updateDocumentContent(uuid, content)
+        }
+        catch (err) {
+            throw new Error('DocumentController: getUser: ' + (err as Error).message)
+        }
+    }
+
+    async deleteDocument(uuid: string): Promise<IDocument> {
+        try {
+            return await this.documentModel.deleteDocument(uuid)
+        }
+        catch (err) {
+            throw new Error('DocumentController: getUser: ' + (err as Error).message)
+        }
+    }
+    async unshareDocument(uuid: string): Promise<ISharedDocument> {
+        try {
+            return await this.documentModel.unshareDocument(uuid)
         }
         catch (err) {
             throw new Error('DocumentController: getUser: ' + (err as Error).message)
