@@ -1,9 +1,11 @@
-const FileControls = () => {
+import React from 'react';
 
+const FileControl: React.FC = () => {
     return (
-        <>
-            {/* share, delete, download a file, buttons... */}
-        </>
-    )
-}
-export default FileControls
+        <div>
+            <h1>Gallery Page</h1>
+        </div>
+    );
+};
+
+export default FileControl;

@@ -64,24 +64,49 @@
 //         </>
 //     );
 // };
+
+//export default App;
+//
+
+
+
+
+//
+// import React from 'react';
+// import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+// import NavBar from './components/NavBar';
+// import Home from './components/Home';
+// import Gallery from './components/FileControl';
+// import Editor from './components/DocumentEditor';
+// import LoginSignup from './components/LoginSignup';
+//
+// const App: React.FC = () => {
+//     return (
+//         <Router>
+//             <NavBar />
+//             <Switch>
+//                 <Route exact path="/" component={Home} />
+//                 <Route path="/gallery" component={Gallery} />
+//                 <Route path="/editor" component={Editor} />
+//                 <Route path="/login-signup" component={LoginSignup} />
+//             </Switch>
+//         </Router>
+//     );
+// };
 //
 // export default App;
 
-
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import DocumentEditor from './components/DocumentEditor';
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import NavBar from './components/NavBar';
 
-const App = () => {
+const App: React.FC = () => {
     return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<DocumentEditor />} />
-            </Routes>
-        </Router>
+        <div>
+            <NavBar />
+            {/* Your other components go here */}
+        </div>
     );
 };
 
 export default App;
+
