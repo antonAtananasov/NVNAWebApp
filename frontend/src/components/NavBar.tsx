@@ -31,6 +31,13 @@ const NavBar: React.FC = () => {
                         >
                             Editor
                         </Nav.Link>
+                        <Nav.Link
+                            as={Link}
+                            to="/my-doc"
+                            className={`nav-item ${location.pathname === '/my-doc' ? 'active-link' : ''}`}
+                        >
+                            MyDoc
+                        </Nav.Link>
                     </Nav>
                     <Nav>
                         <NavDropdown title={<FaUserCircle size={24} />} id="basic-nav-dropdown" className="nav-item">

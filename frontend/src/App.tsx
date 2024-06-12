@@ -182,7 +182,6 @@
 // }
 //
 // export default App;
-
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
@@ -191,6 +190,7 @@ import FileControls from './components/FileControls';
 import LoginSignup from './components/LoginSignup';
 import Home from './components/Home';
 import NotFound from './components/NotFound';
+import FileManager from './components/FileManager'; // Импортиране на новия компонент
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App: React.FC = () => {
@@ -199,9 +199,10 @@ const App: React.FC = () => {
             <NavBar />
             <Routes>
                 <Route path="/" element={<FileControls />} />
-                <Route path="/editor" element={<DocumentEditor />} />
+                <Route path="/editor/:documentId" element={<DocumentEditor />} />
                 <Route path="/login-signup" element={<LoginSignup />} />
                 <Route path="/home" element={<Home />} />
+                <Route path="/my-doc" element={<FileManager />} /> {/* Нов маршрут */}
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </Router>
@@ -209,6 +210,8 @@ const App: React.FC = () => {
 }
 
 export default App;
+
+
 
 
 
