@@ -17,29 +17,16 @@ export class UserAuthenticator {
     private sessionDuration: number;
     private overwrite: boolean;
 
-    async authenticateWithCredentials(username: string, password: string, overwrite?: boolean, duration?: number): Promise<IUserSession> {
+    async authenticateWithCredentials(uuid: string, username: string, password: string, overwrite?: boolean, duration?: number): Promise<IUserSession> {
         overwrite ||= overwrite === false ? false : this.overwrite
         duration ||= this.sessionDuration
-        const user: IUser = {
-            username: username,
-            password: password
-        }
-        const storedSession: IUserSession | undefined = this.authenticatedSessions.find(session => session as IUser === user)
-        if (storedSession) {
-            //there is a stored session on server
-            if (new Date().getTime() < new Date(storedSession.expires).getTime()) {
-                //session is active
-                return this.renewSession(storedSession, duration)
-            }
-            else
-                //session has expired
-                return await this.generateSession(username, password, overwrite)
-
-
-        }
-        else
-            //there is no stored sesson on server
+        const foundUser = await this.userModel.getUserByName(username)
+        if (foundUser.uuid === uuid && foundUser.username === username && await encryptor.compare(password, foundUser.password)) {
+            this.authenticatedSessions = this.authenticatedSessions.filter(s => s.username != username)
             return await this.generateSession(username, password, overwrite)
+        }
+        else throw new Error('Wrong credentials')
+        //there is no stored sesson on server
     }
     async authenticateWithSession(session: IUserSession, duration?: number): Promise<boolean> {
         duration ||= this.sessionDuration

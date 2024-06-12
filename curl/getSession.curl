@@ -1,0 +1,7 @@
+curl -b cookie.txt --location --request GET 'http://localhost:3000/api/users/session' \
+--header 'Content-Type: application/json' \
+--data '{
+    "username":"Test",
+    "password":"12621101"
+}'
+echo

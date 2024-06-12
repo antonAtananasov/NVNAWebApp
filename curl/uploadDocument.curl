@@ -1,0 +1,16 @@
+OTHER_DATA='{
+    "name":"TestDocument.txt",
+    "ownerUUID":"9b2a80d8-7e8b-435b-9968-3a02bc4d18e2",
+    "format":"txt",
+}'
+
+# Read the contents of the file and escape it properly for JSON
+FILE_CONTENT=$(jq -Rs . < document.txt)
+
+# Combine the other JSON data with the file content
+JSON_DATA=$(jq -n --argjson other "$OTHER_DATA" --arg fileContent "$FILE_CONTENT" '$other + {content: $fileContent}')
+
+curl -b cookie.txt --location --request 'POST' 'http://localhost:3000/api/documents/ \
+header 'Content-Type: application/json' \
+--data "$(JSON_DATA)"
+echo
