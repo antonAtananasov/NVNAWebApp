@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bootstrap-icons": "^1.11.3",
     "concurrently": "^8.2.2",
     "cors": "^2.8.5",
     "nodemon": "^3.1.3",

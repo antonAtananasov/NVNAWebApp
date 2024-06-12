@@ -7,7 +7,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { FaUserCircle } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './NavBar.css';
-import { SearchBar } from './FileControls'; // Импортиране на SearchBar
+import { SearchBar } from './FileControls';
 
 const NavBar: React.FC = () => {
     const location = useLocation();
@@ -40,7 +40,7 @@ const NavBar: React.FC = () => {
                             MyDoc
                         </Nav.Link>
                     </Nav>
-                    <SearchBar /> {/* Добавяне на SearchBar тук */}
+                    <SearchBar />
                     <Nav>
                         <NavDropdown title={<FaUserCircle size={24} />} id="basic-nav-dropdown" className="nav-item">
                             <NavDropdown.Item

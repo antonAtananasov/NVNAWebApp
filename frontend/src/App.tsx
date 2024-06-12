@@ -186,7 +186,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import DocumentEditor from './components/DocumentEditor';
-import FileControls from './components/FileControls';
+
 import LoginSignup from './components/LoginSignup';
 import Home from './components/Home';
 import NotFound from './components/NotFound';
@@ -198,11 +198,11 @@ const App: React.FC = () => {
         <Router>
             <NavBar />
             <Routes>
-                <Route path="/" element={<FileControls />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/editor" element={<DocumentEditor />} />
                 <Route path="/login-signup" element={<LoginSignup />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/my-doc" element={<FileManager />} /> {/* Нов маршрут */}
+
+                <Route path="/documents" element={<FileManager />} /> {}
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </Router>
