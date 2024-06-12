@@ -193,7 +193,7 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Col, Container, Dropdown, DropdownButton, FormControl, InputGroup, Row } from 'react-bootstrap';
+import { Col, Container, Dropdown, DropdownButton, FormControl, InputGroup, Row } from 'react-bootstrap'; // Добавени липсващи импорти
 
 export const ShareButton: React.FC = () => (
     <Button className="m-2" variant="primary">
@@ -270,4 +270,6 @@ const FileControls: React.FC = () => {
 };
 
 export default FileControls;
+
+
 

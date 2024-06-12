@@ -1,0 +1,40 @@
+.file-manager-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card img {
+    height: 150px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.card-body {
+    padding: 10px;
+}
+
+.card-title {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+.card-text {
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.card .btn {
+    font-size: 0.8em;
+    padding: 5px 10px;
+}
