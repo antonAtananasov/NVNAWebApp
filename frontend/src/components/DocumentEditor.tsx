@@ -8,7 +8,7 @@ import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
 import { ButtonGroup, Dropdown, DropdownButton, Container, Row, Col } from 'react-bootstrap';
 import './DocumentEditor.css';
-import { ShareButton, DeleteButton, DownloadButton, SaveButton } from './FileControls';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const CustomToolbar: React.FC<{
     handleSaveDoc: () => void,
@@ -70,12 +70,6 @@ const CustomToolbar: React.FC<{
                     </Dropdown.Item>
                 </DropdownButton>
             </ButtonGroup>
-
-            {/* Import buttons from FileControls */}
-            <ShareButton />
-            <DeleteButton />
-            <DownloadButton />
-            <SaveButton />
         </div>
     );
 };
@@ -93,6 +87,7 @@ const modules = {
 
 const DocumentEditor: React.FC = () => {
     const [pages, setPages] = useState<string[]>(['']);
+    const [documentName, setDocumentName] = useState<string>(''); // State for document name
     const containerRef = useRef<HTMLDivElement>(null);
 
     const handleSaveDoc = async () => {
@@ -102,7 +97,7 @@ const DocumentEditor: React.FC = () => {
             }))
         });
         const blob = await Packer.toBlob(doc);
-        saveAs(blob, 'document.docx');
+        saveAs(blob, `${documentName || 'document'}.docx`);
     };
 
     const handleSavePDF = async () => {
@@ -113,7 +108,7 @@ const DocumentEditor: React.FC = () => {
             }
             doc.text(page, 10, 10);
         });
-        doc.save('document.pdf');
+        doc.save(`${documentName || 'document'}.pdf`);
     };
 
     const handleImportDoc = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -175,6 +170,13 @@ const DocumentEditor: React.FC = () => {
         <Container fluid className="p-3">
             <Row>
                 <Col xs={12} className="mb-2">
+                    <input
+                        type="text"
+                        placeholder="Document Name"
+                        value={documentName}
+                        onChange={(e) => setDocumentName(e.target.value)}
+                        className="form-control mb-2"
+                    />
                     <CustomToolbar
                         handleSaveDoc={handleSaveDoc}
                         handleSavePDF={handleSavePDF}

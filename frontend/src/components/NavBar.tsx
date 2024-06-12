@@ -7,16 +7,17 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { FaUserCircle } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './NavBar.css';
+import { SearchBar } from './FileControls'; // Импортиране на SearchBar
 
 const NavBar: React.FC = () => {
     const location = useLocation();
 
     return (
-        <Navbar expand="lg" className="navbar-gradient">
+        <Navbar bg="primary" expand="lg" className="navbar-gradient">
             <Container fluid>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" className="mx-auto" />
-                <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
-                    <Nav className="nav-bold mx-auto mx-lg-0">
+                <Navbar.Collapse id="basic-navbar-nav" className="justify-content-between">
+                    <Nav className="nav-bold">
                         <Nav.Link
                             as={Link}
                             to="/"
@@ -39,6 +40,7 @@ const NavBar: React.FC = () => {
                             MyDoc
                         </Nav.Link>
                     </Nav>
+                    <SearchBar /> {/* Добавяне на SearchBar тук */}
                     <Nav>
                         <NavDropdown title={<FaUserCircle size={24} />} id="basic-nav-dropdown" className="nav-item">
                             <NavDropdown.Item
