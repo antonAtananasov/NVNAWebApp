@@ -1,15 +1,40 @@
-.navbar-brand {
-    font-size: 1.5rem;
+.editor-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
 }
 
-.nav-link {
-    font-size: 1.2rem;
+.editor-input {
+    width: 210mm; /* A4 width */
+    height: 297mm; /* A4 height */
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 
-.navbar-dark .navbar-nav .nav-link {
-    color: #fff;
+/* Add gap between toolbar buttons */
+#toolbar .ql-header,
+#toolbar .ql-font,
+#toolbar .ql-size,
+#toolbar .ql-color,
+#toolbar .ql-background,
+#toolbar .ql-align,
+#toolbar .ql-direction,
+#toolbar .ql-link,
+#toolbar .ql-image,
+#toolbar .ql-video,
+#toolbar .ql-clean,
+#toolbar .ql-custom-button,
+#toolbar .button-primary,
+#toolbar .button-danger,
+#toolbar .button-info,
+#toolbar .button-success,
+#toolbar > * {
+    margin-right: 10px;
 }
 
-.navbar-dark .navbar-nav .nav-link:hover {
-    color: #ddd;
+#toolbar .input-group .form-control {
+    width: auto;
 }

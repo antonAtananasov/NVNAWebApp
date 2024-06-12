@@ -8,6 +8,7 @@ import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
 import { ButtonGroup, Dropdown, DropdownButton, Container, Row, Col } from 'react-bootstrap';
 import './DocumentEditor.css';
+import { ShareButton, DeleteButton, DownloadButton, SaveButton } from './FileControls';
 
 const CustomToolbar: React.FC<{
     handleSaveDoc: () => void,
@@ -16,7 +17,8 @@ const CustomToolbar: React.FC<{
     handleImportPDF: (event: React.ChangeEvent<HTMLInputElement>) => void,
 }> = ({ handleSaveDoc, handleSavePDF, handleImportDoc, handleImportPDF }) => {
     return (
-        <div id="toolbar">
+        <div id="toolbar" className="d-flex flex-wrap align-items-center gap-10">
+            {/* Quill Toolbar */}
             <select className="ql-header" defaultValue="" onChange={e => e.persist()}>
                 <option value="1">Header 1</option>
                 <option value="2">Header 2</option>
@@ -43,13 +45,15 @@ const CustomToolbar: React.FC<{
             <button className="ql-list" value="ordered" aria-label="Ordered List">OL</button>
             <button className="ql-list" value="bullet" aria-label="Bullet List">UL</button>
             <button className="ql-indent" value="-1" aria-label="Indent -1">Indent -</button>
-            <button className="ql-indent" value="+1" aria-label="Indent +1">Indent +</button>
+            <button className="ql-indent" value="+1" aria-label="Indent +">Indent +</button>
             <select className="ql-align"></select>
             <button className="ql-direction" value="rtl" aria-label="Right to Left">RTL</button>
             <button className="ql-link" aria-label="Link">Link</button>
             <button className="ql-image" aria-label="Image">Image</button>
             <button className="ql-video" aria-label="Video">Video</button>
             <button className="ql-clean" aria-label="Clean">Clean</button>
+
+            {/* Custom Buttons */}
             <ButtonGroup className="ml-2">
                 <DropdownButton as={ButtonGroup} title="Save" variant="primary" className="ql-custom-button">
                     <Dropdown.Item onClick={handleSaveDoc}>AS DOCX</Dropdown.Item>
@@ -66,6 +70,12 @@ const CustomToolbar: React.FC<{
                     </Dropdown.Item>
                 </DropdownButton>
             </ButtonGroup>
+
+            {/* Import buttons from FileControls */}
+            <ShareButton />
+            <DeleteButton />
+            <DownloadButton />
+            <SaveButton />
         </div>
     );
 };
@@ -173,8 +183,8 @@ const DocumentEditor: React.FC = () => {
                     />
                 </Col>
             </Row>
-            <Row>
-                <Col xs={12} className="mb-2 editor-container" ref={containerRef}>
+            <Row className="justify-content-center">
+                <Col xs={12} md={8} lg={6} className="mb-2 editor-container" ref={containerRef}>
                     {pages.map((page, index) => (
                         <ReactQuill
                             key={index}
