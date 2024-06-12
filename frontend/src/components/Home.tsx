@@ -1,9 +1,9 @@
 const Home = () => {
-
     return (
-        <>
-            {/* the home/about page of our webapp... */}
-        </>
-    )
-}
-export default Home
+        <div>
+            <h1>Welcome to the Home Page</h1>
+        </div>
+    );
+};
+
+export default Home;

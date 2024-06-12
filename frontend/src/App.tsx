@@ -158,12 +158,38 @@
 // export default App
 
 
+// import React from 'react';
+// import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+// import NavBar from './components/NavBar';
+// import DocumentEditor from './components/DocumentEditor';
+// import FileControls from './components/FileControls';
+// import LoginSignup from './components/LoginSignup';
+// import NotFound from './components/NotFound';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+//
+// const App: React.FC = () => {
+//     return (
+//         <Router>
+//             <NavBar />
+//             <Routes>
+//                 <Route path="/" element={<FileControls />} />
+//                 <Route path="/editor" element={<DocumentEditor />} />
+//                 <Route path="/login-signup" element={<LoginSignup />} />
+//                 <Route path="*" element={<NotFound />} />
+//             </Routes>
+//         </Router>
+//     );
+// }
+//
+// export default App;
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import DocumentEditor from './components/DocumentEditor';
 import FileControls from './components/FileControls';
 import LoginSignup from './components/LoginSignup';
+import Home from './components/Home';
 import NotFound from './components/NotFound';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -175,6 +201,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<FileControls />} />
                 <Route path="/editor" element={<DocumentEditor />} />
                 <Route path="/login-signup" element={<LoginSignup />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </Router>
@@ -182,7 +209,6 @@ const App: React.FC = () => {
 }
 
 export default App;
-
 
 
 
