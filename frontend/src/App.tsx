@@ -199,7 +199,7 @@ const App: React.FC = () => {
             <NavBar />
             <Routes>
                 <Route path="/" element={<FileControls />} />
-                <Route path="/editor/:documentId" element={<DocumentEditor />} />
+                <Route path="/editor" element={<DocumentEditor />} />
                 <Route path="/login-signup" element={<LoginSignup />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/my-doc" element={<FileManager />} /> {/* Нов маршрут */}
