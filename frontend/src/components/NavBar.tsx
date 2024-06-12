@@ -11,12 +11,14 @@ import { SearchBar } from './FileControls'; // Импортиране на Searc
 
 const NavBar: React.FC = () => {
     const location = useLocation();
-
+    const leftm70 = {
+        left: '-70%'
+    }
     return (
         <Navbar bg="primary" expand="lg" className="navbar-gradient">
             <Container fluid>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" className="mx-auto" />
-                <Navbar.Collapse id="basic-navbar-nav" className="justify-content-between">
+                <Navbar.Collapse id="basic-navbar-nav" className="mx-2 justify-content-between w-100">
                     <Nav className="nav-bold">
                         <Nav.Link
                             as={Link}
@@ -37,12 +39,12 @@ const NavBar: React.FC = () => {
                             to="/my-doc"
                             className={`nav-item ${location.pathname === '/my-doc' ? 'active-link' : ''}`}
                         >
-                            MyDoc
+                            Documents
                         </Nav.Link>
                     </Nav>
-                    <SearchBar /> {/* Добавяне на SearchBar тук */}
+                    {/* <SearchBar /> Добавяне на SearchBar тук */}
                     <Nav>
-                        <NavDropdown title={<FaUserCircle size={24} />} id="basic-nav-dropdown" className="nav-item">
+                        <NavDropdown title={<FaUserCircle size={24} style={leftm70} />} id="leftm70 basic-nav-dropdown" className="nav-item">
                             <NavDropdown.Item
                                 as={Link}
                                 to="/login-signup"

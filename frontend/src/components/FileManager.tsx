@@ -60,30 +60,34 @@ const FileManager: React.FC = () => {
     */
 
     return (
-        <Container>
-            <Row className="file-manager-header">
-                <h2>Projects > Project 1</h2>
-            </Row>
-            <Row>
-                {documents.map((doc) => (
-                    <Col key={doc.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
-                        <Card className="text-center h-100">
-                            <Card.Img variant="top" src={doc.thumbnail} alt={doc.name} />
-                            <Card.Body>
-                                <Card.Title>{doc.name}</Card.Title>
-                                <Card.Text>Created by: {doc.createdBy}</Card.Text>
-                                <Card.Text>Size: {doc.size}</Card.Text>
-                                <div className="d-flex justify-content-around">
-                                    <Button variant="primary" className="btn-sm">Edit</Button>
-                                    <DownloadButton />
-                                    <DeleteButton />
-                                </div>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                ))}
-            </Row>
-        </Container>
+        <Row className={'justify-content-center'}>
+            <Col md={8}>
+                <Row className="file-manager-header mt-5">
+                    <h2>My Documents</h2>
+                </Row>
+                <Row>
+                    {documents.map((doc) => (
+                        <Col key={doc.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
+                            <Card className="text-center h-100">
+                                <Card.Img variant="top" src={doc.thumbnail} alt={doc.name} />
+                                <Card.Body>
+                                    <Card.Title>{doc.name}</Card.Title>
+                                    <Card.Text>Created by: {doc.createdBy}</Card.Text>
+                                    <Card.Text>Size: {doc.size}</Card.Text>
+                                    <div className="d-flex justify-content-around">
+                                        <Button variant="primary" className="btn-sm">Edit</Button>
+                                        <Button variant="info" className="btn-sm">Download</Button>
+                                        <Button variant="danger" className="btn-sm">Delete</Button>
+                                        {/* <DownloadButton /> */}
+                                        {/* <DeleteButton /> */}
+                                    </div>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    ))}
+                </Row>
+            </Col>
+        </Row>
     );
 };
 

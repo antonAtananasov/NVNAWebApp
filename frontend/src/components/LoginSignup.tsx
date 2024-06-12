@@ -23,7 +23,7 @@ const LoginSignup = () => {
     };
 
     const handleSignUp = () => {
-        if (name.length > 6 && password.length > 6 && password === repeatPassword) {
+        if (name.length >= 6 && password.length >= 6 && password === repeatPassword) {
             if (!users.has(name)) {
                 users.set(name, password);
                 setIsRegistered(true);
@@ -37,7 +37,7 @@ const LoginSignup = () => {
     };
 
     const handleLogin = () => {
-        if (name.length > 6 && password.length > 6) {
+        if (name.length >= 6 && password.length >= 6) {
             if (users.has(name) && users.get(name) === password) {
                 navigate('/home');
             } else {
