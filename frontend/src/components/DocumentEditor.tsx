@@ -9,24 +9,29 @@ import * as pdfjsLib from 'pdfjs-dist';
 import { ButtonGroup, Dropdown, DropdownButton, Container, Row, Col } from 'react-bootstrap';
 import './DocumentEditor.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Button } from 'react-bootstrap'
 
 const CustomToolbar: React.FC<{
     handleSaveDoc: () => void,
     handleSavePDF: () => void,
-    handleImportDoc: (event: React.ChangeEvent<HTMLInputElement>) => void,
-    handleImportPDF: (event: React.ChangeEvent<HTMLInputElement>) => void,
+    handleImportDoc: (event?: React.ChangeEvent<HTMLInputElement>) => void,
+    handleImportPDF: (event?: React.ChangeEvent<HTMLInputElement>) => void,
 }> = ({ handleSaveDoc, handleSavePDF, handleImportDoc, handleImportPDF }) => {
+
+    const resetStyle = {
+        all: 'revert'
+    } as React.CSSProperties
     return (
-        <div id="toolbar" className="d-flex flex-wrap align-items-center gap-10">
+        <div id="toolbar" className="d-flex flex-wrap align-items-center gap-10 w-100 justify-content-evenly">
             {/* Quill Toolbar */}
-            <select className="ql-header" defaultValue="" onChange={e => e.persist()}>
+            <select className="ql-header" defaultValue={0} onChange={e => e.persist()}>
                 <option value="1">Header 1</option>
                 <option value="2">Header 2</option>
                 <option value="3">Header 3</option>
                 <option value="4">Header 4</option>
                 <option value="5">Header 5</option>
-                <option value="6">Header 6</option>
-                <option value="">Normal</option>
+                <option value='6'>Header 6</option>
+                <option value="0">Normal</option>
             </select>
             <select className="ql-font"></select>
             <select className="ql-size"></select>
@@ -54,8 +59,17 @@ const CustomToolbar: React.FC<{
             <button className="ql-clean" aria-label="Clean">Clean</button>
 
             {/* Custom Buttons */}
-            <ButtonGroup className="ml-2">
-                <DropdownButton as={ButtonGroup} title="Save" variant="primary" className="ql-custom-button">
+            <div style={resetStyle} className='row'>
+                <div style={resetStyle} className='col-4 gap-2 d-flex' >
+                    <Button style={resetStyle} className={'p-2 rounded bg-primary border-0 '} variant='primary' onClick={handleSavePDF}>Save PDF</Button>
+                    <Button style={resetStyle} className={'p-2 rounded bg-primary border-0 '} variant='primary' onClick={handleSaveDoc}>Save DOCX</Button>
+                    {/* <Button style={resetStyle} className={'p-2 rounded bg-primary border-0 '} variant='primary' onClick={() => { handleImportDoc() }}>Import PDF</Button>
+                    <Button style={resetStyle} className={'p-2 rounded bg-primary border-0 '} variant='primary' onClick={() => { handleImportPDF() }}>Import DOCX</Button> */}
+                </div>
+
+            </div>
+            {/* <ButtonGroup className="ml-2">
+                <DropdownButton as={ButtonGroup} title="Save" variant="primary" className="button button-danger">
                     <Dropdown.Item onClick={handleSaveDoc}>AS DOCX</Dropdown.Item>
                     <Dropdown.Item onClick={handleSavePDF}>AS PDF</Dropdown.Item>
                 </DropdownButton>
@@ -69,7 +83,7 @@ const CustomToolbar: React.FC<{
                         AS PDF
                     </Dropdown.Item>
                 </DropdownButton>
-            </ButtonGroup>
+            </ButtonGroup> */}
         </div>
     );
 };
@@ -180,8 +194,8 @@ const DocumentEditor: React.FC = () => {
                     <CustomToolbar
                         handleSaveDoc={handleSaveDoc}
                         handleSavePDF={handleSavePDF}
-                        handleImportDoc={handleImportDoc}
-                        handleImportPDF={handleImportPDF}
+                        handleImportDoc={(e) => { handleImportDoc(e!) }}
+                        handleImportPDF={(e) => { handleImportPDF(e!) }}
                     />
                 </Col>
             </Row>
@@ -192,7 +206,7 @@ const DocumentEditor: React.FC = () => {
                             key={index}
                             theme='snow'
                             value={page}
-                            onChange={(content) => handlePageChange(content, index)}
+                            onChange={(content: string) => handlePageChange(content, index)}
                             className={`editor-input ${index === 0 ? 'first-page' : ''}`}
                             modules={modules}
                         />
