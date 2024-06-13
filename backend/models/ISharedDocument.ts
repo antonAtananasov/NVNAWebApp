@@ -10,3 +10,9 @@ export enum Permission {
     READ = 'read',
     WRITE = 'write',
 }
+export function convertToDto(obj: any): ISharedDocument[] {
+    return obj.map((o: any) => ({
+        ...o,
+        documentUUID: o.document_uuid
+    } as ISharedDocument))
+}

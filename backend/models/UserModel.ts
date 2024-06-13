@@ -9,7 +9,8 @@ export class UserModel extends DB {
             const [rows] = await this.connection.query<IUser[]>('select * from users', [])
             return rows
         }
-        catch {
+        catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at getAllUsers')
         }
     }
@@ -18,7 +19,8 @@ export class UserModel extends DB {
             const [rows] = await this.connection.query<IUser[]>('select * from users where uuid=? limit 1', [uuid])
             return rows[0] as IUser
         }
-        catch {
+        catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at getUser')
         }
     }
@@ -28,7 +30,8 @@ export class UserModel extends DB {
             const [rows] = await this.connection.query<IUser[]>('select * from users where username=? limit 1', [username])
             return rows[0] as IUser
         }
-        catch {
+        catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at getUserByName')
         }
     }
@@ -40,6 +43,7 @@ export class UserModel extends DB {
             return await this.getUser(user.uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at createUser')
         }
     }
@@ -50,6 +54,7 @@ export class UserModel extends DB {
             return await this.getUser(uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at updateUserUsername')
         }
 
@@ -61,6 +66,7 @@ export class UserModel extends DB {
             return await this.getUser(uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at updateUserPassword')
         }
 
@@ -72,6 +78,7 @@ export class UserModel extends DB {
             return true
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at deleteUser')
         }
     }

@@ -25,6 +25,7 @@ export class DocumentController {
             return await this.documentModel.createDocument(doc) as IDocument
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('DocumentController: createDocument: ' + (err as Error).message)
         }
     }
@@ -34,6 +35,7 @@ export class DocumentController {
             return await this.documentModel.accessDocument(uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('DocumentController: getDocument: ' + (err as Error).message)
         }
 
@@ -43,6 +45,7 @@ export class DocumentController {
             return await this.documentModel.shareDocument(shareReq)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('DocumentController: shareDocument: ' + (err as Error).message)
         }
 
@@ -53,6 +56,7 @@ export class DocumentController {
             return await this.documentModel.getFolderContents(uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('DocumentController: getFolderContents: ' + (err as Error).message)
         }
     }
@@ -61,6 +65,7 @@ export class DocumentController {
             return await this.documentModel.getSharedDocumentsByUser(userUUID)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('DocumentController: getSharedDocuments: ' + (err as Error).message)
         }
     }
@@ -69,15 +74,17 @@ export class DocumentController {
             return await this.documentModel.getReceivedDocumentsByUser(uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('DocumentController: getReceivedDocuments: ' + (err as Error).message)
         }
     }
     async getOccupiedStorage(uuid: string): Promise<number> {
         try {
-            return await this.documentModel.getTotalDocumentsSizeByUser(uuid)
+            return await this.documentModel.getTotalDocumentsSizeByUser(uuid) || 0
         }
         catch (err) {
-            throw new Error('DocumentController: getOccupiedStorage: ' + (err as Error).message)
+            console.error((err as Error).message);
+            return 0
         }
     }
     async getPlan(id: number): Promise<IPlan> {
@@ -85,6 +92,7 @@ export class DocumentController {
             return await this.documentModel.getPlan(id)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('DocumentController: getPlan: ' + (err as Error).message)
         }
     }
@@ -93,6 +101,7 @@ export class DocumentController {
             return await this.documentModel.getUserByDocument(uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('DocumentController: getUserByDocument: ' + (err as Error).message)
         }
     }
@@ -101,6 +110,7 @@ export class DocumentController {
             return await this.documentModel.getUser(uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('DocumentController: getUser: ' + (err as Error).message)
         }
     }
@@ -109,6 +119,7 @@ export class DocumentController {
             return await this.documentModel.updateDocumentContent(updateReq)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('DocumentController: getUser: ' + (err as Error).message)
         }
     }
@@ -118,6 +129,7 @@ export class DocumentController {
             return await this.documentModel.deleteDocument(uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('DocumentController: getUser: ' + (err as Error).message)
         }
     }
@@ -126,6 +138,7 @@ export class DocumentController {
             return await this.documentModel.unshareDocument(uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('DocumentController: getUser: ' + (err as Error).message)
         }
     }

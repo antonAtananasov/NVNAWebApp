@@ -85,6 +85,7 @@ userRouter.post('/', async (req, res) => { //create new user
             }
         }
         catch (err) {
+            console.error((err as Error).message);
             res.status(500).send("userRouter: post /: " + (err as Error).message)
             return
         }
@@ -112,11 +113,13 @@ userRouter.post('/login', async (req, res) => { // login and create session
                 }
             }
             catch (err) {
+                console.error((err as Error).message);
                 res.status(400).send('UserRouter: post /login: ' + (err as Error).message)
                 return
             }
     }
     catch (err) {
+        console.error((err as Error).message);
         res.status(500).send('UserRouter: post /login: ' + (err as Error).message)
         return
     }
@@ -143,7 +146,8 @@ userRouter.put('/:uuid', async (req, res) => { //change user data (password or u
                     try {
                         session = await userAuthenticator.authenticateWithCredentials(foundUser.uuid, credentialChangeReq.username, credentialChangeReq.password) //require password, not session
                     }
-                    catch {
+                    catch (err) {
+                        console.error((err as Error).message);
                         res.status(400).send('Wrong credentials')
                         return
                     }
@@ -155,6 +159,7 @@ userRouter.put('/:uuid', async (req, res) => { //change user data (password or u
                             if (!duplicateUserName || duplicateUserName.username != credentialChangeReq.newUsername) // username is not already taken
                                 try { await userController.updateUserUsername(foundUser.uuid, credentialChangeReq.newUsername) }
                                 catch (err) {
+                                    console.error((err as Error).message);
                                     res.status(500).send('UserRouter: put /:uuid: ' + (err as Error).message)
                                     return
                                 }
@@ -168,6 +173,7 @@ userRouter.put('/:uuid', async (req, res) => { //change user data (password or u
                             if (userAuthenticator.validatePassword(credentialChangeReq.newPassword)) //password matches validation
                                 try { await userController.updateUserPassword(foundUser.uuid, credentialChangeReq.newPassword) }
                                 catch (err) {
+                                    console.error((err as Error).message);
                                     res.status(500).send('UserRouter: put /:uuid: ' + (err as Error).message)
                                     return
                                 }
@@ -188,11 +194,13 @@ userRouter.put('/:uuid', async (req, res) => { //change user data (password or u
                     }
                 }
                 catch (err) {
+                    console.error((err as Error).message);
                     res.status(400).send('UserRouter: put /:uuid: ' + (err as Error).message)
                     return
                 }
         }
         catch (err) {
+            console.error((err as Error).message);
             res.status(500).send('UserRouter: put /:uuid: ' + (err as Error).message)
             return
         }
@@ -234,6 +242,7 @@ userRouter.delete('/:uuid', async (req, res) => { //delete user
         }
     }
     catch (err) {
+        console.error((err as Error).message);
         res.status(500).send('UserRouter: delete /:uuid: ' + (err as Error).message)
         return
     }

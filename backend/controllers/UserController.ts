@@ -13,6 +13,7 @@ export class UserController {
             return await this.userModel.getUser(uuid) as IUser;
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('UserController: getUser: ' + (err as Error).message)
         }
     }
@@ -21,6 +22,7 @@ export class UserController {
             return await this.userModel.getUserByName(username) as IUser;
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('UserController: getUserByName: ' + (err as Error).message)
         }
     }
@@ -31,6 +33,7 @@ export class UserController {
             return await this.userModel.createUser({ ...user, password: hashedPassword });
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('UserController: createUser: ' + (err as Error).message)
         }
     }
@@ -40,6 +43,7 @@ export class UserController {
             return await this.userModel.updateUserUsername(uuid, username)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('UserController: updateUserUsername: ' + (err as Error).message)
         }
     }
@@ -49,6 +53,7 @@ export class UserController {
             return await this.userModel.updateUserPassword(uuid, hashedPassword)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('UserController: updateUserPassword: ' + (err as Error).message)
         }
     }
@@ -58,6 +63,7 @@ export class UserController {
             return await this.userModel.deleteUser(uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('UserController: deleteUser: ' + (err as Error).message)
         }
     }

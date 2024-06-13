@@ -14,10 +14,11 @@ app.get('/', (req, res) => { //to quickly see if the server is handling requests
     res.send('hello world')
 })
 
-app.use('/api/users', userRouter) //all requests to localhost:3000/api/users will be redirected to the userRouter script/object
-app.use('/api/documents', documentRouter) //all requests to localhost:3000/api/documents will be redirected to the documentRouter script/object
+app.use('/api/users', userRouter) //all requests to /api/users will be redirected to the userRouter script/object
+app.use('/api/documents', documentRouter) //all requests to /api/documents will be redirected to the documentRouter script/object
 
 
-app.listen(3000, () => {
-    console.log('Backend running.') // notiy the console that the backend service is running
+const port = 3001
+app.listen(port, () => {
+    console.log(`Backend running on port ${port}.`) // notiy the console that the backend service is running
 });

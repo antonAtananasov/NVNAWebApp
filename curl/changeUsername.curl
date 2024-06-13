@@ -1,0 +1,8 @@
+curl -c cookie.txt --location --request 'PUT' 'http://localhost:3000/api/users/9b2a80d8-7e8b-435b-9968-3a02bc4d18e2' \
+--header 'Content-Type: application/json' \
+--data '{
+    "username":"Student",
+    "password":"12621101",
+    "newUsername":"Anton"
+}'
+echo
