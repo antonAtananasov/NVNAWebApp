@@ -5,7 +5,7 @@ import password_icon from '../assets/password.png';
 import user_icon from '../assets/person.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const users = new Map(); // Using a Map to store users
+const users = new Map();
 
 const LoginSignup = () => {
     const [action, setAction] = useState<string>('Sign Up');
@@ -27,7 +27,7 @@ const LoginSignup = () => {
             if (!users.has(name)) {
                 users.set(name, password);
                 setIsRegistered(true);
-                setAction('Login'); // Switch to login after successful registration
+                setAction('Login');
             } else {
                 navigate('/notfound');
             }
@@ -39,7 +39,7 @@ const LoginSignup = () => {
     const handleLogin = () => {
         if (name.length >= 6 && password.length >= 6) {
             if (users.has(name) && users.get(name) === password) {
-                navigate('/home');
+                navigate('/');
             } else {
                 navigate('/notfound');
             }

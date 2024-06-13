@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Offcanvas, Form, Button } from 'react-bootstrap';
+import './EditUser.css'; // Import the CSS file
 
 const EditUser = ({ onClose }) => {
     const [userName, setUserName] = useState('');
@@ -26,6 +27,7 @@ const EditUser = ({ onClose }) => {
                             placeholder="Enter your user name"
                             value={userName}
                             onChange={(e) => setUserName(e.target.value)}
+                            className="custom-input" // Add custom CSS class
                         />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formPassword">
@@ -35,6 +37,7 @@ const EditUser = ({ onClose }) => {
                             placeholder="Enter your password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            className="custom-input" // Add custom CSS class
                         />
                     </Form.Group>
                     <Button variant="primary" onClick={handleSave}>
