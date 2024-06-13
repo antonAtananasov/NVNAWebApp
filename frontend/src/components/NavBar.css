@@ -1,0 +1,8 @@
+.user-dropdown-container {
+    margin-right: 20px; /* Adjust this value as needed */
+}
+
+#user-dropdown .dropdown-menu {
+    right: 0;
+    left: auto;
+}

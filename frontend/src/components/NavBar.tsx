@@ -1,45 +1,48 @@
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Navbar, Nav, NavDropdown, Container } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import './NavBar.css';
+import EditUser from './EditUser';
 
-function ColorSchemesExample() {
+const NavBar = () => {
+    const userName = "User";
+    const [showEditUser, setShowEditUser] = useState(false);
+
+    const handleEditUserClick = () => {
+        setShowEditUser(true);
+    };
+
+    const handleCloseEditUser = () => {
+        setShowEditUser(false);
+    };
+
     return (
         <>
-            <Navbar bg="dark" data-bs-theme="dark">
-                <Container>
-                    <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-                    <Nav className="me-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#features">Features</Nav.Link>
-                        <Nav.Link href="#pricing">Pricing</Nav.Link>
-                    </Nav>
+            <Navbar bg="primary" variant="dark" expand="lg">
+                <Container fluid>
+                    <Navbar.Brand as={Link} to="/">NVNAWebApp</Navbar.Brand>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Collapse id="basic-navbar-nav">
+                        <Nav className="me-auto">
+                            <Nav.Link as={Link} to="/">Home</Nav.Link>
+                            <Nav.Link as={Link} to="/editor">Editor</Nav.Link>
+                            <Nav.Link as={Link} to="/documents">Documents</Nav.Link>
+                        </Nav>
+                        <Nav className="ms-auto d-flex align-items-center user-dropdown-container">
+                            <span className="text-white me-2">Hello, {userName}</span>
+                            <NavDropdown title={<i className="bi bi-person-circle"></i>} id="user-dropdown" align="end">
+                                <NavDropdown.Item onClick={handleEditUserClick}>Edit User</NavDropdown.Item>
+                                <NavDropdown.Item as={Link} to="/login-signup">Exit</NavDropdown.Item>
+                            </NavDropdown>
+                        </Nav>
+                    </Navbar.Collapse>
                 </Container>
             </Navbar>
-            <br />
-            <Navbar bg="primary" data-bs-theme="dark">
-                <Container>
-                    <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-                    <Nav className="me-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#features">Features</Nav.Link>
-                        <Nav.Link href="#pricing">Pricing</Nav.Link>
-                    </Nav>
-                </Container>
-            </Navbar>
-
-            <br />
-            <Navbar bg="light" data-bs-theme="light">
-                <Container>
-                    <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-                    <Nav className="me-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#features">Features</Nav.Link>
-                        <Nav.Link href="#pricing">Pricing</Nav.Link>
-                    </Nav>
-                </Container>
-            </Navbar>
+            {showEditUser && <EditUser onClose={handleCloseEditUser} />}
         </>
     );
 }
 
-export default ColorSchemesExample;
+export default NavBar;

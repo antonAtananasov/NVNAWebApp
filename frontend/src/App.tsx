@@ -1,57 +1,41 @@
-import { useEffect, useState } from 'react';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import NavBar from './components/NavBar';
+import DocumentEditor from './components/DocumentEditor';
+import LoginSignup from './components/LoginSignup';
+import EditUser from './components/EditUser';
+import Home from './components/Home';
+import NotFound from './components/NotFound';
+import FileManager from './components/FileManager';
+import Footer from './components/Footer'; // Импортиране на футъра
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Nav, Navbar } from 'react-bootstrap';
-import { Container, Row, Col } from "react-bootstrap";
-import RegisterAccountForm from './components/RegisterAccountForm';
 
+const App: React.FC = () => {
+    return (
+        <Router>
+            <Main />
+            <Footer /> {/* Добавяне на футъра */}
+        </Router>
+    );
+};
 
-const testGet = async (setter: React.Dispatch<React.SetStateAction<string>>) => {
-    const result = await fetch('http://localhost:3000/')
-    const text = await result.text()
-    setter(text)
-}
-
-
-function App() {
-    const [count, setCount] = useState(0)
-    const [text, setText] = useState('loading...')
-    useEffect(() => {
-        testGet(setText)
-    })
+const Main: React.FC = () => {
+    const location = useLocation();
+    const showNavBar = location.pathname !== '/login-signup';
 
     return (
         <>
-            {/* put the BrowserRouter and Route tags here */}
-            <Navbar bg="dark" data-bs-theme="dark">
-                <Container>
-                    <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-                    <Nav className="me-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#features">Features</Nav.Link>
-                        <Nav.Link href="#pricing">Pricing</Nav.Link>
-                    </Nav>
-                </Container>
-            </Navbar>
-
-
-            <Container data-bs-theme="light position" fluid className="w-100">
-                <Row className="w-100 mt-4 mb-4">
-                    <Col className='col-2 border-end'>Left panel</Col>
-                    <Col className='col-8'>
-                        <Row className='w-100 p-3'>
-                            <RegisterAccountForm></RegisterAccountForm>
-                        </Row>
-                    </Col>
-                    <Col className='col-2 border-start'>Right panel</Col>
-                </Row>
-                <Row className='w-100 p-3 border-top'>Footer</Row>
-
-            </Container> {/*
- */}
-            {/*  */}
+            {showNavBar && <NavBar />}
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/editor" element={<DocumentEditor />} />
+                <Route path="/login-signup" element={<LoginSignup />} />
+                <Route path="/edit-user" element={<EditUser />} />
+                <Route path="/documents" element={<FileManager />} />
+                <Route path="*" element={<NotFound />} />
+            </Routes>
         </>
-    )
-}
+    );
+};
 
-export default App
+export default App;

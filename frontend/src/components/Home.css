@@ -1,0 +1,31 @@
+.buttons-gap{
+    gap:30px;
+}
+/* Home.css */
+.home-banner {
+    padding: 30px 20px;
+    background-color: #fff;
+}
+
+.gallery {
+    position: relative;
+}
+
+.arrow-btn {
+    font-size: 2rem;
+    color: #000;
+}
+
+.modal-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.left-arrow {
+    left: 10px;
+}
+
+.right-arrow {
+    right: 10px;
+}
