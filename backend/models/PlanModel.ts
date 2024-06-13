@@ -8,7 +8,8 @@ export class PlanModel extends DB {
             const [rows] = await this.connection.query<IPlan[]>('SELECT * from plans', [])
             return rows
         }
-        catch {
+        catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at getAllDocuments')
         }
     }
@@ -18,7 +19,8 @@ export class PlanModel extends DB {
             const [rows] = await this.connection.query<IPlan[]>('SELECT * from plans where id=? limit 1', [id])
             return rows[0] as IPlan
         }
-        catch {
+        catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at getAllDocuments')
         }
     }

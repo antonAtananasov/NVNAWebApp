@@ -1,4 +1,5 @@
 import { QueryResult, RowDataPacket } from "mysql2"
+import { IDocument as IDocumentDto } from "../controllers/dtos"
 
 export interface IDocument extends RowDataPacket { // how a row from the database maps to a javascript object
     uuid: string
@@ -15,4 +16,18 @@ export interface IDocument extends RowDataPacket { // how a row from the databas
 }
 export interface IDocumentSize extends RowDataPacket {
     size: number
+}
+export function convertToDto(obj: any): IDocumentDto[] {
+    return obj.map((o: any) => ({
+        ...o,
+        uuid: o.uuid,
+        ownerUUID: o.owner_uuid,
+        name: o.name,
+        rootDocumentUUID: o.root_document_id,
+        creationDate: o.creation_date,
+        lastAccessedDate: o.last_accessed_date,
+        lastModifiedDate: o.last_modified_date,
+        size: o.size
+    } as IDocumentDto
+    ))
 }

@@ -1,19 +1,20 @@
-import { IUser, IUserSession } from "./dtos";
+import { IUserSession } from "./dtos";
 import { UserModel } from "../models/UserModel";
 import encryptor from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid'
+import sessionsRepository, { SessionsRepository } from "./SessionsRepository";
 
 
 export class UserAuthenticator {
     constructor(sessionDuration?: number, overwrite?: boolean) {
         this.userModel = new UserModel();
-        this.authenticatedSessions = []
+        this.sessionsRepo = sessionsRepository
         this.sessionDuration = sessionDuration || 30 * 60 * 1000 //30 mins * 60 seconds * 1000 millis  
         this.overwrite = overwrite === false ? false : true //default true 
     }
 
     private userModel = new UserModel();
-    private authenticatedSessions: IUserSession[];
+    private sessionsRepo: SessionsRepository;
     private sessionDuration: number;
     private overwrite: boolean;
 
@@ -22,7 +23,7 @@ export class UserAuthenticator {
         duration ||= this.sessionDuration
         const foundUser = await this.userModel.getUserByName(username)
         if (foundUser.uuid === uuid && foundUser.username === username && await encryptor.compare(password, foundUser.password)) {
-            this.authenticatedSessions = this.authenticatedSessions.filter(s => s.username != username)
+            this.sessionsRepo.sessions = this.sessionsRepo.sessions.filter(s => s.username != username)
             return await this.generateSession(username, password, overwrite)
         }
         else throw new Error('Wrong credentials')
@@ -31,12 +32,12 @@ export class UserAuthenticator {
     async authenticateWithSession(session: IUserSession, duration?: number): Promise<boolean> {
         duration ||= this.sessionDuration
 
-        const foundSession = this.authenticatedSessions.find(s => s.id === session.id)
-        if (foundSession == undefined)
-            return false
-        this.renewSession(foundSession, duration)
-
-        return new Date(foundSession.expires).getTime() > new Date().getTime()
+        const foundSession = this.sessionsRepo.sessions.find(s => s.id == session.id)
+        if (foundSession && new Date(foundSession.expires).getTime() > new Date().getTime()) {
+            this.renewSession(foundSession, duration)
+            return true
+        }
+        return false
     }
     async authenticateWithCookie(cookies: any): Promise<boolean> {
         return cookies.session && await this.authenticateWithSession(JSON.parse(cookies) as IUserSession)
@@ -55,13 +56,14 @@ export class UserAuthenticator {
             }
             if (await encryptor.compare(password, foundUser.password!)) {
                 if (overwrite)//logout other instances of same user
-                    this.authenticatedSessions.filter(session => session.username != newSession.username)
-                this.authenticatedSessions.push(newSession)
+                    this.sessionsRepo.sessions.filter(session => session.username != newSession.username)
+                this.sessionsRepo.sessions.push(newSession)
                 return newSession
             }
             else throw new Error('Wrong Password')
         }
         catch (err) {
+            console.error((err as Error).message);
             throw err
         }
 
@@ -69,13 +71,13 @@ export class UserAuthenticator {
     renewSession(session: IUserSession, duration?: number): IUserSession {
         duration ||= this.sessionDuration
 
-        for (let i = 0; i < this.authenticatedSessions.length; i++)
-            if (this.authenticatedSessions[i] === session) {
+        for (let i = 0; i < this.sessionsRepo.sessions.length; i++)
+            if (this.sessionsRepo.sessions[i] === session) {
                 const renewedSession = {
                     ...session, expires: new Date(new Date().getTime() + duration)
                 }
                 //extend session
-                this.authenticatedSessions[i] = renewedSession
+                this.sessionsRepo.sessions[i] = renewedSession
                 return renewedSession
             }
         return session //fix compiler warning
@@ -83,7 +85,7 @@ export class UserAuthenticator {
     }
     logout(session: IUserSession, overwrite: boolean = true) {
         //remove session from list if (overwrite == true) remove all sessions of same user
-        this.authenticatedSessions = this.authenticatedSessions.filter(s => overwrite ? !(s.id === session.id && s.username === session.username) : !(s.id === session.id))
+        this.sessionsRepo.sessions = this.sessionsRepo.sessions.filter(s => overwrite ? !(s.id === session.id && s.username === session.username) : !(s.id === session.id))
     }
 
     validatePassword(password: string): boolean {
