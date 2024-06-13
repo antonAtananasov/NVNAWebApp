@@ -15,11 +15,13 @@ import editUserImage from '../assets/EditUser.png';
 import documentsImage from '../assets/Documents.png';
 import editorImage from '../assets/Editor.png';
 import './Home.css';
+import { IUser } from '../dtos/dtos';
 
 const images = [webAppPage1, webAppPage2, webAppPage3, webAppPage4];
 
 const Home = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [loggedUser, setLoggedUser] = useState<IUser | undefined>(undefined);
     const [showModal, setShowModal] = useState(false);
 
     const handleNext = () => {
@@ -49,11 +51,11 @@ const Home = () => {
                         <p className="lead h4">
                             The project aims to create a seamless and user-friendly platform for document editing and file management, enabling users to efficiently handle their documents and files with an intuitive interface and robust features.
                         </p>
-                        <div className="d-flex flex-column flex-md-row justify-content-center align-items-center">
-                            <Link to="/editor" className="mb-2 mb-md-0">
+                        <div className="d-flex flex-column flex-md-row justify-content-center align-items-center gap-2">
+                            <Link to={loggedUser ? "/editor" : '/login-signup'} className="mb-2 mb-md-0">
                                 <Button variant="primary" size="lg" className="btn-lg" style={{ height: '60px', margin: '20px', width: '100%' }}>Editor</Button>
                             </Link>
-                            <Link to="/documents">
+                            <Link to={loggedUser ? "/documents" : '/login-signup'}>
                                 <Button variant="secondary" size="lg" className="btn-lg" style={{ height: '60px', margin: '20px', width: '100%', borderStyle: '1px solid' }}>Documents</Button>
                             </Link>
                         </div>

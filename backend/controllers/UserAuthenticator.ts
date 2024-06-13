@@ -88,8 +88,9 @@ export class UserAuthenticator {
         this.sessionsRepo.sessions = this.sessionsRepo.sessions.filter(s => overwrite ? !(s.id === session.id && s.username === session.username) : !(s.id === session.id))
     }
 
-    validatePassword(password: string): boolean {
-        return password.length >= 6 //just length
+    validatePassword(password?: string): boolean {
+        if (!password) return false
+        return password.length! >= 6 //just length
     }
 
 }
