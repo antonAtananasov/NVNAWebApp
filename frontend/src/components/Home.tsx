@@ -76,15 +76,15 @@ const Home = () => {
                 <Row className="justify-content-center">
                     <Col xs={6} md={4} className="text-center">
                         <img src={reactLogo} alt="React Logo" className="img-fluid" style={{ maxHeight: '100px' }} />
-                        <p className="h4 m-2 " style={{ color: "white", fontWeight: '500', fontWeight: '600' }}>React</p>
+                        <p className="h4 m-2 " style={{ color: "white", fontWeight: '500' }}>React</p>
                     </Col>
                     <Col xs={6} md={4} className="text-center">
                         <img src={typescriptLogo} alt="TypeScript Logo" className="img-fluid" style={{ maxHeight: '100px' }} />
-                        <p className="h4 m-2" style={{ color: "white", fontWeight: '500', fontWeight: '600' }}>TypeScript</p>
+                        <p className="h4 m-2" style={{ color: "white", fontWeight: '500' }}>TypeScript</p>
                     </Col>
                     <Col xs={6} md={4} className="text-center">
                         <img src={sqlLogo} alt="SQL Logo" className="img-fluid" style={{ maxHeight: '100px' }} />
-                        <p className="h4 m-2" style={{ color: "white", fontWeight: '500', fontWeight: '600' }}>SQL</p>
+                        <p className="h4 m-2" style={{ color: "white", fontWeight: '500' }}>SQL</p>
                     </Col>
                 </Row>
             </Container>
@@ -242,8 +242,12 @@ const Home = () => {
             <Container fluid style={{ padding: '30px 20px', backgroundColor: '#f8f9fa' }}>
                 <Row>
                     <Col style={{ backgroundColor: '#0d6efd', height: '200px' }}>
+<<<<<<< HEAD
                         <h2 className="text-center font-weight-bold p-5"
                             style={{ color: "white", fontWeight: '600', fontSize: '40pt' }}>Pages & Functionalities</h2>
+=======
+                        <h2 className="text-center font-weight-bold p-5" style={{ color: "white", fontWeight: '600', fontSize: '40pt' }}>Pages & Functionalities</h2>
+>>>>>>> 39f2a27acf9a611f4cfdd220804b8ed4c65de739
                     </Col>
                 </Row>
                 <Row className="align-items-center">
