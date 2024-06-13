@@ -4,72 +4,81 @@ import { v4 as uuidv4 } from 'uuid';
 
 export class UserModel extends DB {
 
-    getAllUsers: () => Promise<IUser[]> = async () => {
+    async getAllUsers(): Promise<IUser[]> {
         try {
             const [rows] = await this.connection.query<IUser[]>('select * from users', [])
             return rows
         }
-        catch {
+        catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at getAllUsers')
         }
     }
-    getUser: (uuid: string) => Promise<IUser> = async (uuid: string) => {
+    async getUser(uuid: string): Promise<IUser> {
         try {
             const [rows] = await this.connection.query<IUser[]>('select * from users where uuid=? limit 1', [uuid])
-            return rows[0]
+            return rows[0] as IUser
         }
-        catch {
+        catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at getUser')
         }
     }
 
-    getUserByName: (username: string) => Promise<IUser> = async (username: string) => {
+    async getUserByName(username: string): Promise<IUser> {
         try {
             const [rows] = await this.connection.query<IUser[]>('select * from users where username=? limit 1', [username])
-            return rows[0]
+            return rows[0] as IUser
         }
-        catch {
+        catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at getUserByName')
         }
     }
 
-    createUser: (user: any) => Promise<void> = async (user: any) => {
+    async createUser(user: any): Promise<IUser> {
         try {
+
             await this.connection.query('insert into users (uuid,username,password) values (?,?,?)', [uuidv4(), user.username, user.password])
+            return await this.getUser(user.uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at createUser')
         }
     }
 
-    updateUserUsername: (uuid: string, newUsername: string) => Promise<boolean> = async (uuid: string, newUsername: string) => {
+    async updateUserUsername(uuid: string, newUsername: string): Promise<IUser> {
         try {
-            await this.connection.query('update users set username=? where uuid=?', [newUsername, uuid])
-            return true
+            await this.connection.query('update users set username=? where uuid=? limit 1', [newUsername, uuid])
+            return await this.getUser(uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at updateUserUsername')
         }
 
     }
 
-    updateUserPassword: (uuid: string, newPassword: string) => Promise<boolean> = async (uuid: string, newPassword: string) => {
+    async updateUserPassword(uuid: string, newPassword: string): Promise<IUser> {
         try {
-            await this.connection.query('update users set password=? where uuid=?', [newPassword, uuid])
-            return true
+            await this.connection.query('update users set password=? where uuid=? limit 1', [newPassword, uuid])
+            return await this.getUser(uuid)
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at updateUserPassword')
         }
 
     }
 
-    deleteUser: (uuid: string) => Promise<boolean> = async (uuid: string) => {
+    async deleteUser(uuid: string): Promise<boolean> {
         try {
-            await this.connection.query('delete from users where uuid=?', [uuid])
+            await this.connection.query('delete from users where uuid=? limit 1', [uuid])
             return true
         }
         catch (err) {
+            console.error((err as Error).message);
             throw new Error('Database error at deleteUser')
         }
     }

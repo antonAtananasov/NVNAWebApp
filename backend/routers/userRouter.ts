@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { UserController } from "../controllers/UserController";
-import { IUser, IUserSession } from "../controllers/IUser";
+import { IUser, IUserChangeCredentialsRequest, IUserCredentials, IUserSession } from "../controllers/dtos";
 import { UserAuthenticator } from "../controllers/UserAuthenticator";
 
 const userRouter = Router()
@@ -62,7 +62,7 @@ userRouter.get('/:uuid', async (req, res) => { //get user data
 
 //POST
 userRouter.post('/', async (req, res) => { //create new user
-    const user: IUser = {
+    const credentials: IUserCredentials = {
         username: req.body.username,
         password: req.body.password
     }
@@ -73,10 +73,10 @@ userRouter.post('/', async (req, res) => { //create new user
     }
     else
         try {
-            const foundUser = await userController.getUserByName(user.username)
+            const foundUser = await userController.getUserByName(credentials.username)
             if (!foundUser) { // user does not exist in the database
-                userController.createUser(user)
-                res.status(200).send()
+
+                res.status(200).send(userController.createUser(credentials))
                 return
             }
             else { // user already exists
@@ -85,22 +85,23 @@ userRouter.post('/', async (req, res) => { //create new user
             }
         }
         catch (err) {
+            console.error((err as Error).message);
             res.status(500).send("userRouter: post /: " + (err as Error).message)
             return
         }
 })
 
 userRouter.post('/login', async (req, res) => { // login and create session
-    const { username, password } = req.body
+    const credentials: IUserCredentials = { username: req.body.username, password: req.body.password }
     try {
-        const foundUser = await userController.getUserByName(username)
+        const foundUser = await userController.getUserByName(credentials.username)
         if (!foundUser) { //no such user in the database
             res.status(404).send('No such user found')
             return
         }
         else // user is found in the database
             try {
-                const session: IUserSession = await userAuthenticator.authenticateWithCredentials(username, password)
+                const session: IUserSession = await userAuthenticator.authenticateWithCredentials(foundUser.uuid!, credentials.username, credentials.password)
                 if (session) { // user is successfully authenticated and new session is created
                     const sessionJSON = JSON.stringify(session)
                     res.status(200).cookie('session', sessionJSON).send(sessionJSON)
@@ -112,11 +113,13 @@ userRouter.post('/login', async (req, res) => { // login and create session
                 }
             }
             catch (err) {
+                console.error((err as Error).message);
                 res.status(400).send('UserRouter: post /login: ' + (err as Error).message)
                 return
             }
     }
     catch (err) {
+        console.error((err as Error).message);
         res.status(500).send('UserRouter: post /login: ' + (err as Error).message)
         return
     }
@@ -125,20 +128,15 @@ userRouter.post('/login', async (req, res) => { // login and create session
 
 //PUT
 userRouter.put('/:uuid', async (req, res) => { //change user data (password or username)
-    const { username, password } = req.body
-    if (!(username && password)) {
-        res.status(400).send('No credentials sent')
-        return
-    }
-    let { newUsername, newPassword } = req.body
-    if (!(newUsername || newPassword)) {
+    const credentialChangeReq: IUserChangeCredentialsRequest = { username: req.body.username, password: req.body.password, newUsername: req.body.newUsername, newPassword: req.body.newPassword }
+    if (!(credentialChangeReq.newUsername || credentialChangeReq.newPassword)) {
         res.status(400).send('No new credentials sent')
         return
     }
     else
         try {
             const foundUser = await userController.getUser(req.params.uuid)
-            if (!foundUser) { //user with given uuid is not found in the database
+            if (!foundUser.uuid) { //user with given uuid is not found in the database
                 res.status(404).send('No such user found')
                 return
             }
@@ -146,18 +144,22 @@ userRouter.put('/:uuid', async (req, res) => { //change user data (password or u
                 try {
                     let session: IUserSession
                     try {
-                        session = await userAuthenticator.authenticateWithCredentials(username, password) //require password, not session
+                        session = await userAuthenticator.authenticateWithCredentials(foundUser.uuid, credentialChangeReq.username, credentialChangeReq.password) //require password, not session
                     }
-                    catch {
+                    catch (err) {
+                        console.error((err as Error).message);
                         res.status(400).send('Wrong credentials')
                         return
                     }
                     if (session) {// user sent correct credentials
 
-                        if (newUsername && newUsername.length > 6) // user requests new username
-                            if (!await userController.getUserByName(newUsername)) // username is not already taken
-                                try { await userController.updateUserUsername(req.params.uuid, newUsername) }
+                        if (credentialChangeReq.newUsername) // user requests new username
+                        {
+                            const duplicateUserName = await userController.getUserByName(credentialChangeReq.newUsername)
+                            if (!duplicateUserName || duplicateUserName.username != credentialChangeReq.newUsername) // username is not already taken
+                                try { await userController.updateUserUsername(foundUser.uuid, credentialChangeReq.newUsername) }
                                 catch (err) {
+                                    console.error((err as Error).message);
                                     res.status(500).send('UserRouter: put /:uuid: ' + (err as Error).message)
                                     return
                                 }
@@ -165,11 +167,13 @@ userRouter.put('/:uuid', async (req, res) => { //change user data (password or u
                                 res.status(400).send('Username is already taken')
                                 return
                             }
-                        else newUsername = username
-                        if (newPassword) // user requests new password
-                            if (userAuthenticator.validatePassword(newPassword)) //password matches validation
-                                try { await userController.updateUserPassword(req.params.uuid, newPassword) }
+                        }
+                        else credentialChangeReq.newUsername = credentialChangeReq.username
+                        if (credentialChangeReq.newPassword) // user requests new password
+                            if (userAuthenticator.validatePassword(credentialChangeReq.newPassword)) //password matches validation
+                                try { await userController.updateUserPassword(foundUser.uuid, credentialChangeReq.newPassword) }
                                 catch (err) {
+                                    console.error((err as Error).message);
                                     res.status(500).send('UserRouter: put /:uuid: ' + (err as Error).message)
                                     return
                                 }
@@ -177,9 +181,9 @@ userRouter.put('/:uuid', async (req, res) => { //change user data (password or u
                                 res.status(400).send('Password does not match the requirements')
                                 return
                             }
-                        else newPassword = password
+                        else credentialChangeReq.newPassword = credentialChangeReq.password
 
-                        const newSession = await userAuthenticator.authenticateWithCredentials(newUsername, newPassword)
+                        const newSession = await userAuthenticator.authenticateWithCredentials(foundUser.uuid, credentialChangeReq.newUsername, credentialChangeReq.newPassword)
                         const sessionJSON = JSON.stringify(newSession)
                         res.status(200).cookie('session', sessionJSON).send(sessionJSON)
                         return
@@ -190,11 +194,13 @@ userRouter.put('/:uuid', async (req, res) => { //change user data (password or u
                     }
                 }
                 catch (err) {
+                    console.error((err as Error).message);
                     res.status(400).send('UserRouter: put /:uuid: ' + (err as Error).message)
                     return
                 }
         }
         catch (err) {
+            console.error((err as Error).message);
             res.status(500).send('UserRouter: put /:uuid: ' + (err as Error).message)
             return
         }
@@ -215,11 +221,11 @@ userRouter.delete('/login', async (req, res) => { //logout (remove session)
 })
 
 userRouter.delete('/:uuid', async (req, res) => { //delete user
-    const { username, password } = req.body
+    const credentials: IUserCredentials = { username: req.body.username, password: req.body.password }
     try {
-        const session = await userAuthenticator.authenticateWithCredentials(username, password)
+        const uuid: string = req.params.uuid
+        const session = await userAuthenticator.authenticateWithCredentials(uuid, credentials.username, credentials.password)
         if (session) { // session is stored on server and is active
-            const uuid: string = req.params.uuid
             if (uuid !== session.uuid) { //the requesting user not is the requested target 
                 res.status(401).send('User not authorized to perform this action')
                 return
@@ -236,11 +242,11 @@ userRouter.delete('/:uuid', async (req, res) => { //delete user
         }
     }
     catch (err) {
+        console.error((err as Error).message);
         res.status(500).send('UserRouter: delete /:uuid: ' + (err as Error).message)
         return
     }
 })
-
 
 
 export default userRouter;

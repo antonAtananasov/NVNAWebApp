@@ -1,0 +1,1 @@
+Data Transfer Objects (DTOs) help transfer data between the frontend and the backend by setting the requirements for the data needed to perform an action. We use a copy of the backend's controller's interfaces to ensure correct daata handling on both ends and a common standart for its structure 

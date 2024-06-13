@@ -1,58 +1,49 @@
-import { IUser, IUserSession } from "./IUser";
+import { IUserSession } from "./dtos";
 import { UserModel } from "../models/UserModel";
 import encryptor from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid'
+import sessionsRepository, { SessionsRepository } from "./SessionsRepository";
 
 
 export class UserAuthenticator {
     constructor(sessionDuration?: number, overwrite?: boolean) {
         this.userModel = new UserModel();
-        this.authenticatedSessions = []
+        this.sessionsRepo = sessionsRepository
         this.sessionDuration = sessionDuration || 30 * 60 * 1000 //30 mins * 60 seconds * 1000 millis  
         this.overwrite = overwrite === false ? false : true //default true 
     }
 
     private userModel = new UserModel();
-    private authenticatedSessions: IUserSession[];
+    private sessionsRepo: SessionsRepository;
     private sessionDuration: number;
     private overwrite: boolean;
 
-    authenticateWithCredentials: (username: string, password: string, overwrite?: boolean, duration?: number) => Promise<IUserSession> = async (username: string, password: string, overwrite?: boolean, duration?: number) => {
+    async authenticateWithCredentials(uuid: string, username: string, password: string, overwrite?: boolean, duration?: number): Promise<IUserSession> {
         overwrite ||= overwrite === false ? false : this.overwrite
         duration ||= this.sessionDuration
-        const user: IUser = {
-            username: username,
-            password: password
-        }
-        const storedSession: IUserSession | undefined = this.authenticatedSessions.find(session => session as IUser === user)
-        if (storedSession) {
-            //there is a stored session on server
-            if (new Date().getTime() < new Date(storedSession.expires).getTime()) {
-                //session is active
-                return this.renewSession(storedSession, duration)
-            }
-            else
-                //session has expired
-                return await this.generateSession(username, password, overwrite)
-
-
-        }
-        else
-            //there is no stored sesson on server
+        const foundUser = await this.userModel.getUserByName(username)
+        if (foundUser.uuid === uuid && foundUser.username === username && await encryptor.compare(password, foundUser.password)) {
+            this.sessionsRepo.sessions = this.sessionsRepo.sessions.filter(s => s.username != username)
             return await this.generateSession(username, password, overwrite)
+        }
+        else throw new Error('Wrong credentials')
+        //there is no stored sesson on server
     }
-    authenticateWithSession: (session: IUserSession, duration?: number) => Promise<boolean> = async (session: IUserSession, duration?: number) => {
+    async authenticateWithSession(session: IUserSession, duration?: number): Promise<boolean> {
         duration ||= this.sessionDuration
 
-        const foundSession = this.authenticatedSessions.find(s => s.id === session.id)
-        if (foundSession == undefined)
-            return false
-        this.renewSession(foundSession, duration)
-
-        return new Date(foundSession.expires).getTime() > new Date().getTime()
+        const foundSession = this.sessionsRepo.sessions.find(s => s.id == session.id)
+        if (foundSession && new Date(foundSession.expires).getTime() > new Date().getTime()) {
+            this.renewSession(foundSession, duration)
+            return true
+        }
+        return false
+    }
+    async authenticateWithCookie(cookies: any): Promise<boolean> {
+        return cookies.session && await this.authenticateWithSession(JSON.parse(cookies) as IUserSession)
     }
 
-    generateSession: (username: string, password: string, overwrite?: boolean, duration?: number) => Promise<IUserSession> = async (username: string, password: string, overwrite?: boolean, duration?: number) => {
+    async generateSession(username: string, password: string, overwrite?: boolean, duration?: number): Promise<IUserSession> {
         overwrite ||= overwrite === false ? false : this.overwrite
         duration ||= this.sessionDuration
 
@@ -65,38 +56,39 @@ export class UserAuthenticator {
             }
             if (await encryptor.compare(password, foundUser.password!)) {
                 if (overwrite)//logout other instances of same user
-                    this.authenticatedSessions.filter(session => session.username != newSession.username)
-                this.authenticatedSessions.push(newSession)
+                    this.sessionsRepo.sessions.filter(session => session.username != newSession.username)
+                this.sessionsRepo.sessions.push(newSession)
                 return newSession
             }
             else throw new Error('Wrong Password')
         }
         catch (err) {
+            console.error((err as Error).message);
             throw err
         }
 
     }
-    renewSession: (session: IUserSession, duration?: number) => IUserSession = (session: IUserSession, duration?: number) => {
+    renewSession(session: IUserSession, duration?: number): IUserSession {
         duration ||= this.sessionDuration
 
-        for (let i = 0; i < this.authenticatedSessions.length; i++)
-            if (this.authenticatedSessions[i] === session) {
+        for (let i = 0; i < this.sessionsRepo.sessions.length; i++)
+            if (this.sessionsRepo.sessions[i] === session) {
                 const renewedSession = {
                     ...session, expires: new Date(new Date().getTime() + duration)
                 }
                 //extend session
-                this.authenticatedSessions[i] = renewedSession
+                this.sessionsRepo.sessions[i] = renewedSession
                 return renewedSession
             }
         return session //fix compiler warning
 
     }
-    logout = (session: IUserSession, overwrite: boolean = true) => {
+    logout(session: IUserSession, overwrite: boolean = true) {
         //remove session from list if (overwrite == true) remove all sessions of same user
-        this.authenticatedSessions = this.authenticatedSessions.filter(s => overwrite ? !(s.id === session.id && s.username === session.username) : !(s.id === session.id))
+        this.sessionsRepo.sessions = this.sessionsRepo.sessions.filter(s => overwrite ? !(s.id === session.id && s.username === session.username) : !(s.id === session.id))
     }
 
-    validatePassword: (password: string) => boolean = (password: string) => {
+    validatePassword(password: string): boolean {
         return password.length >= 6 //just length
     }
 
