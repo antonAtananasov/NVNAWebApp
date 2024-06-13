@@ -188,6 +188,7 @@ import NavBar from './components/NavBar';
 import DocumentEditor from './components/DocumentEditor';
 
 import LoginSignup from './components/LoginSignup';
+import EditUser from './components/EditUser';
 import Home from './components/Home';
 import NotFound from './components/NotFound';
 import FileManager from './components/FileManager'; // Импортиране на новия компонент
@@ -201,6 +202,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/editor" element={<DocumentEditor />} />
                 <Route path="/login-signup" element={<LoginSignup />} />
+                <Route path="/edit-user" element={<EditUser />} />
 
                 <Route path="/documents" element={<FileManager />} /> {}
                 <Route path="*" element={<NotFound />} />

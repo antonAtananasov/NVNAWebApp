@@ -1,65 +1,8 @@
-/* Стилове за активен бутон */
-.nav-item.active-link {
-    background-color: white;
-    color: blue;
-    border-radius: 5px;
-    margin: 5px;
+.user-dropdown-container {
+    margin-right: 20px; /* Adjust this value as needed */
 }
 
-/* Допълнителни стилове за навигационните елементи */
-.nav-item {
-    padding: 10px 15px;
-    border-radius: 5px;
-    margin: 5px;
-    color: white;
-    font-family: 'Montserrat', sans-serif; /* Промяна на шрифта */
-}
-
-/* Стилове за SearchBar */
-.search-bar {
-    width: 300px; /* Примерен размер */
-    max-width: 100%;
-    margin: 0 auto; /* Центриране */
-}
-
-.search-bar .form-control {
-    border-radius: 50px; /* Заоблени ръбове */
-    height: 36px; /* Височина */
-}
-
-.search-bar .btn {
-    border-radius: 50px;
-    margin-left: -40px; /* За припокриване с input-а */
-    background-color: #f0f0f0; /* Примерен цвят */
-    border: none;
-    height: 36px; /* Същата височина като input-а */
-}
-
-/* Центриране на текста в burger менюто */
-@media (max-width: 991px) {
-    .navbar-collapse {
-        text-align: center;
-    }
-    .navbar-nav {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .search-bar {
-        width: 100%;
-        max-width: 300px; /* Примерен размер */
-        margin: 10px auto; /* Центриране */
-    }
-}
-
-/* Стилове за бутона Exit */
-.nav-item.dropdown-item {
-    color: black;
-}
-
-.nav-item.dropdown-item:hover,
-.nav-item.dropdown-item:focus {
-    background-color: blue;
-    color: white;
+#user-dropdown .dropdown-menu {
+    right: 0;
+    left: auto;
 }

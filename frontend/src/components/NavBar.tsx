@@ -1,66 +1,47 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
-import { FaUserCircle } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Navbar, Nav, NavDropdown, Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import './NavBar.css';
-import { SearchBar } from './FileControls';
+import EditUser from './EditUser';
 
-const NavBar: React.FC = () => {
-    const location = useLocation();
-    const leftm70 = {
-        left: '-70%'
-    }
+const NavBar = () => {
+    const userName = "User";
+    const [showEditUser, setShowEditUser] = useState(false);
+
+    const handleEditUserClick = () => {
+        setShowEditUser(true);
+    };
+
+    const handleCloseEditUser = () => {
+        setShowEditUser(false);
+    };
+
     return (
-        <Navbar bg="primary" expand="lg" className="navbar-gradient">
-            <Container fluid>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" className="mx-auto" />
-                <Navbar.Collapse id="basic-navbar-nav" className="mx-2 justify-content-between w-100">
-                    <Nav className="nav-bold">
-                        <Nav.Link
-                            as={Link}
-                            to="/"
-                            className={`nav-item ${location.pathname === '/' ? 'active-link' : ''}`}
-                        >
-                            Home
-                        </Nav.Link>
-                        <Nav.Link
-                            as={Link}
-                            to="/editor"
-                            className={`nav-item ${location.pathname === '/editor' ? 'active-link' : ''}`}
-                        >
-                            Editor
-                        </Nav.Link>
-                        <Nav.Link
-                            as={Link}
-                            to="/my-doc"
-                            className={`nav-item ${location.pathname === '/my-doc' ? 'active-link' : ''}`}
-                        >
-                            Documents
-                        </Nav.Link>
-                    </Nav>
-<<<<<<< HEAD
-                    <SearchBar />
-=======
-                    {/* <SearchBar /> Добавяне на SearchBar тук */}
->>>>>>> 626e9bfc626c8643a18809b51c2b4cc9c6ca5993
-                    <Nav>
-                        <NavDropdown title={<FaUserCircle size={24} style={leftm70} />} id="leftm70 basic-nav-dropdown" className="nav-item">
-                            <NavDropdown.Item
-                                as={Link}
-                                to="/login-signup"
-                                className={`nav-item ${location.pathname === '/login-signup' ? 'active-link' : ''}`}
-                            >
-                                Exit
-                            </NavDropdown.Item>
-                        </NavDropdown>
-                    </Nav>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
+        <>
+            <Navbar bg="primary" variant="dark" expand="lg">
+                <Container fluid>
+                    <Navbar.Brand as={Link} to="/">NVNAWebApp</Navbar.Brand>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Collapse id="basic-navbar-nav">
+                        <Nav className="me-auto">
+                            <Nav.Link as={Link} to="/">Home</Nav.Link>
+                            <Nav.Link as={Link} to="/editor">Editor</Nav.Link>
+                            <Nav.Link as={Link} to="/documents">Documents</Nav.Link>
+                        </Nav>
+                        <Nav className="ms-auto d-flex align-items-center user-dropdown-container">
+                            <span className="text-white me-2">Hello, {userName}</span>
+                            <NavDropdown title={<i className="bi bi-person-circle"></i>} id="user-dropdown" align="end">
+                                <NavDropdown.Item onClick={handleEditUserClick}>Edit User</NavDropdown.Item>
+                                <NavDropdown.Item as={Link} to="/login-signup">Exit</NavDropdown.Item>
+                            </NavDropdown>
+                        </Nav>
+                    </Navbar.Collapse>
+                </Container>
+            </Navbar>
+            {showEditUser && <EditUser onClose={handleCloseEditUser} />}
+        </>
     );
 }
 
