@@ -26,7 +26,7 @@ const NavBar = () => {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
-                            <Nav.Link as={Link} to="/">Home</Nav.Link>
+                            <Nav.Link as={Link} to="/home">Home</Nav.Link>
                             <Nav.Link as={Link} to="/editor">Editor</Nav.Link>
                             <Nav.Link as={Link} to="/documents">Documents</Nav.Link>
                         </Nav>
@@ -34,7 +34,7 @@ const NavBar = () => {
                             <span className="text-white me-2">Hello, {userName}</span>
                             <NavDropdown title={<i className="bi bi-person-circle"></i>} id="user-dropdown" align="end">
                                 <NavDropdown.Item onClick={handleEditUserClick}>Edit User</NavDropdown.Item>
-                                <NavDropdown.Item as={Link} to="/login-signup">Exit</NavDropdown.Item>
+                                <NavDropdown.Item as={Link} to="/">Exit</NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
                     </Navbar.Collapse>

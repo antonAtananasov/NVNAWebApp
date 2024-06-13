@@ -27,9 +27,9 @@ const Main: React.FC = () => {
         <>
             {showNavBar && <NavBar />}
             <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/editor" element={<DocumentEditor />} />
-                <Route path="/login-signup" element={<LoginSignup />} />
+                <Route path="/" element={<LoginSignup />} />
                 <Route path="/edit-user" element={<EditUser />} />
                 <Route path="/documents" element={<FileManager />} />
                 <Route path="*" element={<NotFound />} />
