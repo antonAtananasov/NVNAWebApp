@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+// import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Container, Row, Col, Button, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import bannerImage from '../assets/banner1.png';
