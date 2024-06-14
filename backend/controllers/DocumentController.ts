@@ -40,6 +40,16 @@ export class DocumentController {
         }
 
     }
+    async getAllDocumentsByUser(userUUID: string): Promise<IDocument[]> {
+        try {
+            return await this.documentModel.getDocumentsByUser(userUUID)
+        }
+        catch (err) {
+            console.error((err as Error).message);
+            throw new Error('DocumentController: getAllDocumentsByUser: ' + (err as Error).message)
+        }
+
+    }
     async shareDocument(shareReq: IShareDocumentRequest): Promise<IDocument> {
         try {
             return await this.documentModel.shareDocument(shareReq)

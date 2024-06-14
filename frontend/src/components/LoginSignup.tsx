@@ -1,15 +1,17 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginSignup.css';
 import password_icon from '../assets/password.png';
 import user_icon from '../assets/person.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { IUserCredentials } from '../dtos/dtos';
+import { IUserCredentials, IUserSession } from '../dtos/dtos';
 import { Spinner } from 'react-bootstrap';
-import Notification, { NotificationVariant } from './Notification'
+import Notification, { Props as NotificationData } from './Notification'
+import { ISessionContext, SessionContext } from '../dtos/extras';
 
 
 const LoginSignup = () => {
+    const { setSession } = useContext(SessionContext) as ISessionContext
     const [action, setAction] = useState<string>('Login');
     const [name, setName] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -17,26 +19,23 @@ const LoginSignup = () => {
     const [isRegistered, setIsRegistered] = useState<boolean>(false);
     const [isWaitingResponse, setIsWaitingResponse] = useState<boolean>(false)
     const navigate = useNavigate();
+    const [notification, setNotification] = useState<NotificationData | undefined>(undefined)
 
     const handleActionChange = (newAction: string) => {
         setAction(newAction);
-        // setName('');
-        setPassword('');
         setRepeatPassword('');
     };
+    const showNotification = (data: NotificationData, timeout: number) => {
+        setNotification(data)
+        setTimeout(() =>
+            setNotification(undefined), timeout)
+    }
 
     const handleSignUp = async () => {
         if (name.length >= 4 && password.length >= 6 && password === repeatPassword) {
-            // if (!users.has(name)) {
-            //     users.set(name, password);
-            //     setIsRegistered(true);
-            //     setAction('Login');
-            // } else {
-            //     navigate('/notfound');
-            // }
             const user: IUserCredentials = {
                 username: name,
-                password: repeatPassword
+                password: password
             }
             setIsWaitingResponse(true)
             setTimeout(() => {
@@ -44,41 +43,65 @@ const LoginSignup = () => {
                     method: 'post', body: JSON.stringify(user), headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
-                    },
-                }).then((res: Response) => {
-                    setIsWaitingResponse(false)
+                    }, credentials: 'same-origin',
+                }).then(async (res: Response) => {
                     if (res.status === 200) {
-                        navigate('/documents')
+                        setIsRegistered(true)
+                        handleLogin()
                     }
                     else {
-
+                        const t = await res.text()
+                        showNotification({ title: res.statusText, subtitle: String(res.status), message: t }, 1500)
                     }
-                })
+                }).catch()
 
             }, 1500);
+            setIsWaitingResponse(false)
         }
         else {
-            console.log('passwords dont match')
+            showNotification({ title: '', subtitle: '', message: 'Passwords dont match' }, 1500)
         }
     };
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
+        const user: IUserCredentials = {
+            username: name,
+            password: password
+        }
         if (name.length >= 4 && password.length >= 6) {
-            // if (users.has(name) && users.get(name) === password) {
-            //     navigate('/');
-            // } else {
-            //     navigate('/notfound');
-            // }
+            setIsWaitingResponse(true)
+            await fetch('http://localhost:3001/api/users/login', {
+                method: 'post', body: JSON.stringify(user), headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }, credentials: 'include',
+            }).then(async (res: Response) => {
+                if (res.status === 200) {
+                    res.json().then((json: any) => {
+                        const sessionData = json as IUserSession;
+                        setSession(() => sessionData)
+                        document.cookie = 'session=' + JSON.stringify(json) + ';'
+                    })
+
+                    navigate('/home')
+
+                }
+                else {
+                    const t = await res.text()
+
+                    showNotification({ title: res.statusText, subtitle: String(res.status), message: t }, 1500)
+                }
+            }).catch()
+            setIsWaitingResponse(false)
+
         } else {
-            navigate('/notfound');
+            showNotification({ title: '', subtitle: String(''), message: 'Invalid username or password' }, 1500)
         }
     };
 
     return (
         <>
-            <div className='position-absolute start-50 translate-middle'>
-                <Notification title={'res.statusText'} subtitle={String('res.status')} message={JSON.stringify('res.body')} variant={NotificationVariant.warning} />
-            </div>
+            {notification && <Notification title={notification.title} subtitle={String(notification.subtitle)} message={notification.message} variant={notification.variant} />}
             <div className='container bg-primary text-white'>
                 <div className='header'>
                     <div className='text'>{action}</div>
@@ -134,7 +157,7 @@ const LoginSignup = () => {
                     )}
                 </div>
                 <div
-                    className='toggle-action my-2 mx-4'
+                    className='toggle-action my-2 mx-4 text-decoration-underline'
                     onClick={() => handleActionChange(action === 'Sign Up' ? 'Login' : 'Sign Up')}
                 >
                     {action === 'Sign Up' ? 'Log-in' : 'New user? - Sign Up'}

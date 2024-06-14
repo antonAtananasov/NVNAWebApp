@@ -6,7 +6,14 @@ const app = express();
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 app.use(json())
-app.use(cors())
+const corsOptions = {
+    origin: 'http://localhost:5173', // Replace with your frontend's URL
+    credentials: true, // This is required to allow credentials in CORS
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+};
+
+app.use(cors(corsOptions))
 app.use(cookieParser())
 
 

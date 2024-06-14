@@ -6,23 +6,24 @@ import jsPDF from 'jspdf';
 import { Document, Packer, Paragraph } from 'docx';
 import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
-import { ButtonGroup, Dropdown, DropdownButton, Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import './DocumentEditor.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button } from 'react-bootstrap'
+import { useLocation } from 'react-router-dom';
 
 const CustomToolbar: React.FC<{
     handleSaveDoc: () => void,
     handleSavePDF: () => void,
     handleImportDoc: (event?: React.ChangeEvent<HTMLInputElement>) => void,
     handleImportPDF: (event?: React.ChangeEvent<HTMLInputElement>) => void,
-}> = ({ handleSaveDoc, handleSavePDF, handleImportDoc, handleImportPDF }) => {
+}> = ({ handleSaveDoc, handleSavePDF }) => {
 
     const resetStyle = {
         all: 'revert'
     } as React.CSSProperties
     return (
-        <div id="toolbar" className="d-flex flex-wrap align-items-center gap-10 w-100 justify-content-evenly">
+        <div id="toolbar" className="d-flex flex-wrap align-items-start gap-10 w-100 justify-content-start">
             {/* Quill Toolbar */}
             <select className="ql-header" defaultValue={0} onChange={e => e.persist()}>
                 <option value="1">Header 1</option>
@@ -59,31 +60,13 @@ const CustomToolbar: React.FC<{
             <button className="ql-clean" aria-label="Clean">Clean</button>
 
             {/* Custom Buttons */}
-            <div style={resetStyle} className='row'>
+            <div style={resetStyle} className='row ml-auto'>
                 <div style={resetStyle} className='col-4 gap-2 d-flex' >
-                    <Button style={resetStyle} className={'p-2 rounded bg-primary border-0 '} variant='primary' onClick={handleSavePDF}>Save PDF</Button>
-                    <Button style={resetStyle} className={'p-2 rounded bg-primary border-0 '} variant='primary' onClick={handleSaveDoc}>Save DOCX</Button>
-                    {/* <Button style={resetStyle} className={'p-2 rounded bg-primary border-0 '} variant='primary' onClick={() => { handleImportDoc() }}>Import PDF</Button>
-                    <Button style={resetStyle} className={'p-2 rounded bg-primary border-0 '} variant='primary' onClick={() => { handleImportPDF() }}>Import DOCX</Button> */}
+                    <Button style={resetStyle} className={'p-2 rounded bg-primary border-0 text-white'} variant='primary' onClick={handleSavePDF}>Save PDF</Button>
+                    <Button style={resetStyle} className={'p-2 rounded bg-primary border-0 text-white'} variant='primary' onClick={handleSaveDoc}>Save DOCX</Button>
                 </div>
 
             </div>
-            {/* <ButtonGroup className="ml-2">
-                <DropdownButton as={ButtonGroup} title="Save" variant="primary" className="button button-danger">
-                    <Dropdown.Item onClick={handleSaveDoc}>AS DOCX</Dropdown.Item>
-                    <Dropdown.Item onClick={handleSavePDF}>AS PDF</Dropdown.Item>
-                </DropdownButton>
-                <DropdownButton as={ButtonGroup} title="Import" variant="primary" className="ql-custom-button">
-                    <Dropdown.Item>
-                        <input type="file" accept=".doc,.docx" onChange={handleImportDoc} className="form-control-file" />
-                        AS DOCX
-                    </Dropdown.Item>
-                    <Dropdown.Item>
-                        <input type="file" accept=".pdf" onChange={handleImportPDF} className="form-control-file" />
-                        AS PDF
-                    </Dropdown.Item>
-                </DropdownButton>
-            </ButtonGroup> */}
         </div>
     );
 };
@@ -159,7 +142,7 @@ const DocumentEditor: React.FC = () => {
         }
         setPages(newPages);
     };
-
+    const location = useLocation()
     useEffect(() => {
         const container = containerRef.current;
         if (container) {
@@ -178,7 +161,23 @@ const DocumentEditor: React.FC = () => {
                 });
             });
         }
-    }, [pages]);
+        const pathArr = location.pathname.split('/')
+        fetch('http://localhost:3001/api/documents/document/' + pathArr[pathArr.length - 1], {
+            method: 'get', headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }, credentials: 'include',
+        }).then((res: Response) => {
+            if (res.status === 200) {
+                res.json().then((doc: any) => {
+                    if (doc) {
+                        setPages([doc.content])
+                        setDocumentName(doc.name)
+                    }
+                })
+            }
+        }).catch()
+    }, []);
 
     return (
         <Container fluid className="p-3">

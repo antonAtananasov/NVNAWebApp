@@ -12,10 +12,11 @@ export enum NotificationVariant {
     dark = 'dark',
 
 }
-interface Props { title: string, subtitle: string, message: string, variant?: NotificationVariant }
+
+export interface Props { title: string, subtitle: string, message: string, variant?: NotificationVariant }
 const Notification = (props: Props) => {
     return (
-        <Toast bg={String(props.variant)}>
+        <Toast bg={String(props.variant)} className='position-absolute start-50 translate-middle'>
             <Toast.Header>
                 <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
                 <strong className="me-auto">{props.title}</strong>

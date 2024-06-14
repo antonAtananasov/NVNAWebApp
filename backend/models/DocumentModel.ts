@@ -12,7 +12,7 @@ export class DocumentModel extends DB {
 
     async getAllDocuments(): Promise<IDocumentDto[]> {
         try {
-            const [rows] = await this.connection.query<IDocument[]>('SELECT uuid,owner_uuid,name,format,root_document_uuid,is_folder,creation_date,last_modified_date,last_accessed_date, d.size FROM documents', [])
+            const [rows] = await this.connection.query<IDocument[]>('SELECT uuid,owner_uuid,name,format,root_document_uuid,is_folder,creation_date,last_modified_date,last_accessed_date,size FROM documents', [])
             return convertDocumentResultToDto(rows)
         }
         catch (err) {
@@ -52,7 +52,7 @@ export class DocumentModel extends DB {
     async getReceivedDocumentsByUser(uuid: string): Promise<IDocumentDto[]> {
         try {
             const [rows] = await this.connection.query<IDocument[]>(
-                'SELECT d.uuid,d.owner_uuid,d.name,d.format,d.root_document_uuid,d.is_folder,d.creation_date,d.last_modified_date,d.last_accessed_date, d.size FROM documents d JOIN shared_documents s ON s.document_uuid = d.uuid where s.user_uuid = ? ',
+                'SELECT d.uuid,d.owner_uuid,d.name,d.format,d.root_document_uuid,d.is_folder,d.creation_date,d.last_modified_date,d.last_accessed_date, d.size FROM documents d JOIN shared_documents s ON s.document_uuid = d.uuid where s.owner_uuid = ? ',
                 [uuid]
             )
             return convertDocumentResultToDto(rows)
@@ -67,7 +67,7 @@ export class DocumentModel extends DB {
         try {
             let foundDocuments: IDocumentDto[] = [];
             const [ownedDocuments] = await this.connection.query<IDocument[]>(
-                'SELECT uuid,owner_uuid,name,format,root_document_uuid,is_folder,creation_date,last_modified_date,last_accessed_date, d.size FROM documents WHERE user_uuid=?',
+                'SELECT uuid,owner_uuid,name,format,root_document_uuid,is_folder,creation_date,last_modified_date,last_accessed_date,size FROM documents WHERE owner_uuid=?',
                 [uuid]
             )
             foundDocuments.push(...ownedDocuments)
@@ -181,7 +181,7 @@ export class DocumentModel extends DB {
         const [rows] = await this.connection.query<IUser[]>('select * from users where username=? limit 1', [shareReq.username])
         const targetUserUUID = rows[0].uuid
         try {
-            await this.connection.query('insert into shared_documents (document_uuid, user_uuid, permission) values (?,?,?)', [shareReq.documentUUID, targetUserUUID, shareReq.permission])
+            await this.connection.query('insert into shared_documents (document_uuid, owner_uuid, permission) values (?,?,?)', [shareReq.documentUUID, targetUserUUID, shareReq.permission])
             return await this.getDocument(shareReq.documentUUID)
         }
         catch (err) {

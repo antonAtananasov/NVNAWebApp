@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import DocumentEditor from './components/DocumentEditor';
@@ -7,29 +7,40 @@ import EditUser from './components/EditUser';
 import Home from './components/Home';
 import NotFound from './components/NotFound';
 import FileManager from './components/FileManager';
-import Footer from './components/Footer'; // Импортиране на футъра
+import Footer from './components/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { IUserSession } from './dtos/dtos';
+import { SessionContext } from './dtos/extras';
+import Cookies from 'js-cookie'
 
 const App: React.FC = () => {
+    const [session, setSession] = useState<IUserSession | undefined>(undefined)
+    useEffect(() => {
+        setSession(() => JSON.parse(Cookies.get('session')!) as IUserSession)
+    }, [])
     return (
         <>
-            <Router>
-                <Main />
-            </Router>
-            <Footer /> {/* Добавяне на футъра */}
+            <SessionContext.Provider value={{ session, setSession }}>
+                <Router>
+                    <NavBar />
+                    <Main />
+                    <Footer />
+                </Router>
+            </SessionContext.Provider>
         </>
     );
 };
 
+
 const Main: React.FC = () => {
     return (
         <>
-            {true && <NavBar />}
             <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/editor" element={<DocumentEditor />} />
-                <Route path="/login-signup" element={<LoginSignup />} />
-                <Route path="/edit-user" element={<EditUser onClose={undefined} />} />
+                <Route path="/home" element={<Home />} />
+                <Route path="/edit" element={<DocumentEditor />} />
+                <Route path="/edit/*" element={<DocumentEditor />} />
+                <Route path="/" element={<LoginSignup />} />
+                <Route path="/edit-user" element={<EditUser />} />
                 <Route path="/documents" element={<FileManager />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
