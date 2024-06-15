@@ -27,7 +27,7 @@ const FileManager: React.FC = () => {
             }, credentials: 'include',
         }).then((res: Response) => {
             if (res.status === 200) {
-                res.json().then((docs: any) => { docs && setDocuments(docs); console.log(docs) })
+                res.json().then((docs: any) => { docs && setDocuments(docs) })
             }
             else {
                 setNotification({ title: res.statusText, subtitle: String(res.status), message: String(res.body) } as INotification)

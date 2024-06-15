@@ -29,7 +29,7 @@ const NavBar = () => {
 
     return (
         <>
-            <Navbar bg="primary ps-4" variant="dark" expand="lg">
+            <Navbar bg="primary ps-4 position-fixed top-0 w-100" variant="dark" expand="lg" style={{ zIndex: '10' }}>
                 <Container fluid>
                     <Navbar.Brand as={Link} to="/">NVNAWebApp</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -75,6 +75,8 @@ const NavBar = () => {
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
+            <br className='m-5' />
+            <br className='m-5' />
         </>
     );
 }

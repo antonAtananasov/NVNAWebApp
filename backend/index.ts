@@ -27,5 +27,5 @@ app.use('/api/documents', documentRouter) //all requests to /api/documents will 
 
 const port = 3001
 app.listen(port, () => {
-    console.log(`Backend running on port ${port}.`) // notiy the console that the backend service is running
+    console.info(`Backend running on port ${port}.`) // notiy the console that the backend service is running
 });

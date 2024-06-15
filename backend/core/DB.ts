@@ -15,7 +15,7 @@ export class DB {
             }).promise()
         }
         catch (err) {
-            console.log((err as Error).message)
+            console.error((err as Error).message)
             throw new Error('Error connecting to the database: ' + (err as Error).message)
         }
     }

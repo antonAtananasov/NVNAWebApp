@@ -24,7 +24,6 @@ const EditUser = (props: Props) => {
             newPassword: password.length >= 6 ? password : undefined,
             newUsername: userName != session?.username && userName!.length >= 4 ? userName : undefined
         }
-        console.log(req)
         fetch('http://localhost:3001/api/users/' + session?.uuid, {
             method: 'put', body: JSON.stringify(req), headers: {
                 'Accept': 'application/json',
