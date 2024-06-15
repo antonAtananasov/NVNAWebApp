@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, createContext } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { saveAs } from 'file-saver';
@@ -6,13 +6,19 @@ import jsPDF from 'jspdf';
 import { Document, Packer, Paragraph } from 'docx';
 import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Spinner } from 'react-bootstrap';
 import './DocumentEditor.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button } from 'react-bootstrap'
-import { useLocation } from 'react-router-dom';
-import { IDocument, IRenameDocumentRequest, IUpdateDocumentContentRequest } from '../dtos/dtos';
-import { INotification, NotificationContext } from '../dtos/extras';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ICreateDocumentRequest, IDocument, IRenameDocumentRequest, IUpdateDocumentContentRequest } from '../dtos/dtos';
+import { INotification, ISessionContext, NotificationContext, SessionContext } from '../dtos/extras';
+
+interface IBooleanContext {
+    isWaitingResponse: boolean | undefined,
+    setIsWaitingResponse: React.Dispatch<React.SetStateAction<boolean>>
+}
+const IsWaitingResponseContext = createContext<IBooleanContext>({} as IBooleanContext)
 
 const CustomToolbar: React.FC<{
     handleSaveDoc: () => void,
@@ -20,7 +26,7 @@ const CustomToolbar: React.FC<{
     handleImportDoc: (event?: React.ChangeEvent<HTMLInputElement>) => void,
     handleImportPDF: (event?: React.ChangeEvent<HTMLInputElement>) => void,
 }> = ({ handleSaveDoc, handleSavePDF }) => {
-
+    const { isWaitingResponse } = useContext(IsWaitingResponseContext)
     const resetStyle = {
         all: 'revert'
     } as React.CSSProperties
@@ -66,6 +72,8 @@ const CustomToolbar: React.FC<{
                 <div style={resetStyle} className='col-4 gap-2 d-flex' >
                     <Button style={resetStyle} className={'p-2 rounded bg-primary border-0 text-white'} variant='primary' onClick={handleSavePDF}>Save PDF</Button>
                     <Button style={resetStyle} className={'p-2 rounded bg-primary border-0 text-white'} variant='primary' onClick={handleSaveDoc}>Save DOCX</Button>
+                    {isWaitingResponse && <Spinner variant='secondary' />}
+
                 </div>
 
             </div>
@@ -89,6 +97,8 @@ const DocumentEditor: React.FC = () => {
     const [documentName, setDocumentName] = useState<string>(''); // State for document name
     const containerRef = useRef<HTMLDivElement>(null);
     const { setNotification } = useContext(NotificationContext)!
+    const [isWaitingResponse, setIsWaitingResponse] = useState<boolean>(false)
+    const { session } = useContext(SessionContext) as ISessionContext
 
     const handleSaveDoc = async () => {
         const doc = new Document({
@@ -137,12 +147,10 @@ const DocumentEditor: React.FC = () => {
         }
     };
 
-    const handlePageChange = (content: string, index: number) => {
-        const newPages = [...pages];
-        newPages[index] = content;
-        if (content.length > 2000 && index === pages.length - 1) { // Adjust the length check as needed
-            newPages.push('');
-        }
+    const handlePageChange = async (content: string, index?: number) => {
+        index//
+        setIsWaitingResponse(true)
+        const newPages = [content];
         setPages(newPages);
         const locationParts = location.pathname.split('/')
         const documentUUID = locationParts[locationParts.length - 1]
@@ -150,24 +158,31 @@ const DocumentEditor: React.FC = () => {
             uuid: documentUUID,
             content: newPages.join('\n')
         }
-        console.log(req)
+
         fetch('http://localhost:3001/api/documents/' + documentUUID, {
-            method: 'put', headers: {
+            method: 'PUT', headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             }, credentials: 'include', body: JSON.stringify(req)
-        }).then(async (res: Response) => {
+        }).then((res: Response) => {
+            setIsWaitingResponse(false)
             if (res.status === 200) {
                 // res.json().then((docs: any) => { docs && setDocuments(docs) })
             }
             else {
-                const t = await res.text()
-                setNotification({ title: res.statusText, subtitle: String(res.status), message: t } as INotification)
+                res.text().then(t => {
+                    setNotification({ title: res.statusText, subtitle: String(res.status), message: t } as INotification)
+
+                })
             }
-        }).catch()
+
+        })
+        // setIsWaitingResponse(false)
 
     };
-    const handleDocumentNameChange = (newName: string) => {
+    const handleDocumentNameChange = async (newName: string) => {
+        setIsWaitingResponse(true)
+
         setDocumentName(newName);
         const locationParts = location.pathname.split('/')
         const documentUUID = locationParts[locationParts.length - 1]
@@ -175,25 +190,31 @@ const DocumentEditor: React.FC = () => {
             uuid: documentUUID,
             newName: newName
         }
-        console.log(req)
         fetch('http://localhost:3001/api/documents/' + documentUUID, {
             method: 'put', headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             }, credentials: 'include', body: JSON.stringify(req)
-        }).then(async (res: Response) => {
+        }).then((res: Response) => {
             if (res.status === 200) {
                 // res.json().then((docs: any) => { docs && setDocuments(docs) })
             }
             else {
-                const t = await res.text()
-                setNotification({ title: res.statusText, subtitle: String(res.status), message: t } as INotification)
+                res.text().then(t => {
+                    setNotification({ title: res.statusText, subtitle: String(res.status), message: t } as INotification)
+
+                })
             }
-        }).catch()
+            setIsWaitingResponse(false)
+
+        }).catch(() => {
+            setIsWaitingResponse(false)
+        })
 
     };
     const location = useLocation()
     useEffect(() => {
+        setIsWaitingResponse(true)
         const container = containerRef.current;
         if (container) {
             const quills = container.querySelectorAll('.editor-input .ql-editor');
@@ -212,72 +233,100 @@ const DocumentEditor: React.FC = () => {
             });
         }
         const pathArr = location.pathname.split('/')
-        fetch('http://localhost:3001/api/documents/document/' + pathArr[pathArr.length - 1], {
-            method: 'get', headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }, credentials: 'include',
-        }).then(async (res: Response) => {
-            if (res.status === 200) {
-                res.json().then((doc: any) => {
-                    if (doc) {
-                        const d: IDocument = doc as IDocument
-                        try {
-
-                            doc.content = doc.content.data.map((chr: number) => String.fromCharCode(chr)).join('')
-                        }
-                        catch {
-                            console.log(654321)
-                        }
-                        if (!d.content) {
-                            d.content = ''
-                        }
-                        console.log(d)
-                        setPages([d.content!])
-                        setDocumentName(d.name)
-                    }
-                })
-            } else {
-                setNotification({ title: res.statusText, subtitle: String(res.status), message: 'Try logging in again' } as INotification)
-
+        const docId = pathArr[pathArr.length - 1]
+        if (location.pathname.endsWith('/editor')) {
+            const newDoc: ICreateDocumentRequest = {
+                name: 'New Document.txt',
+                ownerUUID: session?.uuid!
             }
-        }).catch()
+            console.log(3456789)
+            fetch('http://localhost:3001/api/documents/' + session?.uuid, {
+                method: 'post', headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }, credentials: 'include', body: JSON.stringify(newDoc)
+            }).then(async (res: Response) => {
+                if (res.status === 200) {
+                    res.json().then((doc: any) => {
+                        if (doc) {
+                            navigate('/edit/' + doc.uuid)
+                        }
+                    })
+                } else {
+                    setNotification({ title: res.statusText, subtitle: String(res.status), message: 'Try logging in again' } as INotification)
+
+                }
+                setIsWaitingResponse(false)
+            }).catch()
+        }
+        else
+            fetch('http://localhost:3001/api/documents/document/' + docId, {
+                method: 'get', headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }, credentials: 'include',
+            }).then(async (res: Response) => {
+                if (res.status === 200) {
+                    res.json().then((doc: any) => {
+                        if (doc) {
+                            const d: IDocument = doc as IDocument
+                            if (!d.content) {
+                                d.content = ''
+                            }
+                            setPages([d.content!])
+                            setDocumentName(d.name)
+                        }
+                    })
+                } else {
+                    setNotification({ title: res.statusText, subtitle: String(res.status), message: 'Try logging in again' } as INotification)
+
+                }
+                setIsWaitingResponse(false)
+            }).catch()
     }, []);
+    const navigate = useNavigate()
 
     return (
-        <Container fluid className="p-3">
-            <Row>
-                <Col xs={12} className="mb-2">
-                    <input
-                        type="text"
-                        placeholder="Document Name"
-                        value={documentName}
-                        onChange={(e) => handleDocumentNameChange(e.target.value)}
-                        className="form-control mb-2"
-                    />
-                    <CustomToolbar
-                        handleSaveDoc={handleSaveDoc}
-                        handleSavePDF={handleSavePDF}
-                        handleImportDoc={(e) => { handleImportDoc(e!) }}
-                        handleImportPDF={(e) => { handleImportPDF(e!) }}
-                    />
-                </Col>
-            </Row>
-            <Row className="justify-content-center">
-                <Col xs={12} md={8} lg={6} className="mb-2 editor-container" ref={containerRef}>
-                    {pages.map((page, index) => (
-                        <ReactQuill
-                            key={index}
-                            theme='snow'
-                            value={page}
-                            onChange={(content: string) => handlePageChange(content, index)}
-                            className={`editor-input ${index === 0 ? 'first-page' : ''}`}
-                            modules={modules}
+        <IsWaitingResponseContext.Provider value={{ isWaitingResponse, setIsWaitingResponse }}>
+
+            <Container fluid className="p-3">
+                <Row>
+                    <Col xs={12} className="mb-2">
+                        <Row className='d-flex'>
+                            <input
+                                type="text"
+                                placeholder="Document Name"
+                                value={documentName}
+                                onChange={(e) => handleDocumentNameChange(e.target.value)}
+                                className="form-control mb-2"
+                            />
+                        </Row>
+
+                        <CustomToolbar
+                            handleSaveDoc={handleSaveDoc}
+                            handleSavePDF={handleSavePDF}
+                            handleImportDoc={(e) => { handleImportDoc(e!) }}
+                            handleImportPDF={(e) => { handleImportPDF(e!) }}
                         />
-                    ))}
-                </Col>
-            </Row>
-        </Container>
+                    </Col>
+                </Row>
+                <Row className="justify-content-center">
+                    <Col xs={12} md={8} lg={6} className="mb-2 editor-container" ref={containerRef}>
+                        {pages.map((page, index) => (
+                            <ReactQuill
+                                key={index}
+                                theme='snow'
+                                value={page}
+                                onChange={(content: string) => handlePageChange(content, index)}
+                                className={`editor-input ${index === 0 ? 'first-page' : ''}`}
+                                modules={modules}
+                            />
+                        ))}
+                    </Col>
+                </Row>
+            </Container>
+        </IsWaitingResponseContext.Provider>
+
     );
 }
 

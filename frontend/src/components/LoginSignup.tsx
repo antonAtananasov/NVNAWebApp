@@ -76,9 +76,7 @@ const LoginSignup = () => {
                         setSession(() => sessionData)
                         document.cookie = 'session=' + JSON.stringify(json) + ';'
                     })
-
                     navigate('/home')
-
                     setNotification({ title: 'Login', subtitle: String(res.status), message: 'Successfully logged in' } as INotification)
                 }
                 else {
