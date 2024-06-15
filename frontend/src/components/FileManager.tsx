@@ -5,10 +5,9 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './FileManager.css';
-import Notification, { Props as NotificationData } from './Notification'
 import { IDocument } from '../dtos/dtos'
 import { useNavigate } from 'react-router-dom';
-import { SessionContext, ISessionContext } from '../dtos/extras';
+import { NotificationContext, INotificationContext, INotification } from '../dtos/extras';
 
 const FileManager: React.FC = () => {
     const newDoc: IDocument = {
@@ -19,8 +18,7 @@ const FileManager: React.FC = () => {
         format: '+',
     }
     const [documents, setDocuments] = useState<IDocument[]>([newDoc]);
-    const [notification, setNotification] = useState<NotificationData | undefined>(undefined)
-    const { session } = useContext(SessionContext) as ISessionContext
+    const { setNotification } = useContext(NotificationContext) as INotificationContext
     useEffect(() => {
         fetch('http://localhost:3001/api/documents/gallery', {
             method: 'get', headers: {
@@ -32,27 +30,14 @@ const FileManager: React.FC = () => {
                 res.json().then((docs: any) => { docs && setDocuments(docs); console.log(docs) })
             }
             else {
-                showNotification({ title: res.statusText, subtitle: String(res.status), message: String(res.body) }, 1500)
+                setNotification({ title: res.statusText, subtitle: String(res.status), message: String(res.body) } as INotification)
             }
         }).catch()
     }, [])
-    const showNotification = (data: NotificationData, timeout: number) => {
-        setNotification(data)
-        setTimeout(() =>
-            setNotification(undefined), timeout)
-    }
     const navigate = useNavigate()
-    useEffect(() => {
-        setTimeout(() => {
-            if (!session)
-                navigate('/')
-        }, 10)
-
-    })
 
     return (
         <>
-            {notification && <Notification title={notification.title} subtitle={String(notification.subtitle)} message={JSON.stringify(notification.message)} variant={notification.variant} />}
             <Row className={'justify-content-center'}>
                 <Col md={8} className='px-5'>
                     <Row className="file-manager-header mt-5">

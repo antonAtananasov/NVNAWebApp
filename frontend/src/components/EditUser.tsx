@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { Offcanvas, Form, Button } from 'react-bootstrap';
 import './EditUser.css'; // Import the CSS file
-import { SessionContext } from '../dtos/extras';
+import { INotification, INotificationContext, NotificationContext, SessionContext } from '../dtos/extras';
 import { IUserChangeCredentialsRequest, IUserSession } from '../dtos/dtos';
 
 interface Props {
@@ -13,6 +13,7 @@ const EditUser = (props: Props) => {
     const [password, setPassword] = useState('');
     const [oldPassword, setOldPassword] = useState('');
     const [oldPassword2, setOldPassword2] = useState('');
+    const { setNotification } = useContext(NotificationContext) as INotificationContext
 
     const handleSave = () => {
         // Handle save logic here
@@ -36,11 +37,11 @@ const EditUser = (props: Props) => {
                     document.cookie = 'session=' + JSON.stringify(json) + ';'
                 })
 
-                // showNotification({ title: 'Change account', subtitle: String(res.status), message: JSON.stringify('Successfully updated credentials') }, 1500)
+                setNotification({ title: 'Change account', subtitle: String(res.status), message: JSON.stringify('Successfully updated credentials') } as INotification)
                 props.hidden = true
             }
             else {
-                // showNotification({ title: res.statusText, subtitle: String(res.status), message: JSON.stringify(res.body) }, 1500)
+                setNotification({ title: res.statusText, subtitle: String(res.status), message: JSON.stringify(res.body) } as INotification)
             }
         }).catch()
 

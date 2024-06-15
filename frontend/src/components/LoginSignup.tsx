@@ -6,8 +6,7 @@ import user_icon from '../assets/person.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { IUserCredentials, IUserSession } from '../dtos/dtos';
 import { Spinner } from 'react-bootstrap';
-import Notification, { Props as NotificationData } from './Notification'
-import { ISessionContext, SessionContext } from '../dtos/extras';
+import { INotification, INotificationContext, ISessionContext, NotificationContext, NotificationVariant, SessionContext } from '../dtos/extras';
 
 
 const LoginSignup = () => {
@@ -16,20 +15,15 @@ const LoginSignup = () => {
     const [name, setName] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [repeatPassword, setRepeatPassword] = useState<string>('');
-    const [isRegistered, setIsRegistered] = useState<boolean>(false);
     const [isWaitingResponse, setIsWaitingResponse] = useState<boolean>(false)
     const navigate = useNavigate();
-    const [notification, setNotification] = useState<NotificationData | undefined>(undefined)
+    const { setNotification } = useContext(NotificationContext) as INotificationContext
+
 
     const handleActionChange = (newAction: string) => {
         setAction(newAction);
         setRepeatPassword('');
     };
-    const showNotification = (data: NotificationData, timeout: number) => {
-        setNotification(data)
-        setTimeout(() =>
-            setNotification(undefined), timeout)
-    }
 
     const handleSignUp = async () => {
         if (name.length >= 4 && password.length >= 6 && password === repeatPassword) {
@@ -46,12 +40,12 @@ const LoginSignup = () => {
                     }, credentials: 'same-origin',
                 }).then(async (res: Response) => {
                     if (res.status === 200) {
-                        setIsRegistered(true)
+                        setNotification({ title: 'Register', subtitle: String(res.status), message: "Registered successfully", variant: NotificationVariant.info } as INotification)
                         handleLogin()
                     }
                     else {
                         const t = await res.text()
-                        showNotification({ title: res.statusText, subtitle: String(res.status), message: t }, 1500)
+                        setNotification({ title: res.statusText, subtitle: String(res.status), message: t } as INotification)
                     }
                 }).catch()
 
@@ -59,7 +53,7 @@ const LoginSignup = () => {
             setIsWaitingResponse(false)
         }
         else {
-            showNotification({ title: '', subtitle: '', message: 'Passwords dont match' }, 1500)
+            setNotification({ title: '', subtitle: '', message: 'Passwords dont match' } as INotification)
         }
     };
 
@@ -89,29 +83,23 @@ const LoginSignup = () => {
                 else {
                     const t = await res.text()
 
-                    showNotification({ title: res.statusText, subtitle: String(res.status), message: t }, 1500)
+                    setNotification({ title: res.statusText, subtitle: String(res.status), message: t } as INotification)
                 }
             }).catch()
             setIsWaitingResponse(false)
 
         } else {
-            showNotification({ title: '', subtitle: String(''), message: 'Invalid username or password' }, 1500)
+            setNotification({ title: 'Login / Register', subtitle: String('warning'), message: 'Invalid username or password' } as INotification)
         }
     };
 
     return (
         <>
-            {notification && <Notification title={notification.title} subtitle={String(notification.subtitle)} message={notification.message} variant={notification.variant} />}
             <div className='container bg-primary text-white'>
                 <div className='header'>
                     <div className='text'>{action}</div>
                     <div className='underline'></div>
                 </div>
-                {isRegistered && (
-                    <div className='confirmation'>
-                        Registration successful! Please log in with your credentials.
-                    </div>
-                )}
                 <div className='inputs'>
                     <div className='input'>
                         <img src={user_icon} alt='User icon' />
