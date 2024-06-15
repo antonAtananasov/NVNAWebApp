@@ -5,7 +5,8 @@ import { INotification, INotificationContext, NotificationContext, SessionContex
 import { IUserChangeCredentialsRequest, IUserSession } from '../dtos/dtos';
 
 interface Props {
-    hidden?: boolean
+    hidden?: boolean,
+    onClose: () => void
 }
 const EditUser = (props: Props) => {
     const { session, setSession } = useContext(SessionContext)!
@@ -38,7 +39,7 @@ const EditUser = (props: Props) => {
                 })
 
                 setNotification({ title: 'Change account', subtitle: String(res.status), message: JSON.stringify('Successfully updated credentials') } as INotification)
-                props.hidden = true
+                props.onClose()
             }
             else {
                 setNotification({ title: res.statusText, subtitle: String(res.status), message: JSON.stringify(res.body) } as INotification)
@@ -48,8 +49,8 @@ const EditUser = (props: Props) => {
     };
 
     return (
-        <Offcanvas show onHide={props.hidden} placement="end">
-            <Offcanvas.Header closeButton onClick={() => { props.hidden = true }}>
+        <Offcanvas show onHide={props.onClose} placement="end">
+            <Offcanvas.Header closeButton onClick={() => { props.onClose() }}>
                 <Offcanvas.Title>Edit User</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
@@ -76,7 +77,7 @@ const EditUser = (props: Props) => {
                     </Form.Group>
                     <br className='py-4'></br>
                     <hr className='py-3'></hr>
-                    <Form.Group className="mb-3" controlId="formPassword">
+                    <Form.Group className="mb-3" controlId="formPassword1">
                         <Form.Label>Old Password</Form.Label>
                         <Form.Control
                             type="password"
@@ -86,7 +87,7 @@ const EditUser = (props: Props) => {
                             className="custom-input" // Add custom CSS class
                         />
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="formPassword">
+                    <Form.Group className="mb-3" controlId="formPassword2">
                         <Form.Label>Repeat old Password</Form.Label>
                         <Form.Control
                             type="password"

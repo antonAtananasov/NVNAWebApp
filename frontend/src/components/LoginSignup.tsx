@@ -79,6 +79,7 @@ const LoginSignup = () => {
 
                     navigate('/home')
 
+                    setNotification({ title: 'Login', subtitle: String(res.status), message: 'Successfully logged in' } as INotification)
                 }
                 else {
                     const t = await res.text()

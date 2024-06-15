@@ -5,7 +5,7 @@ import { NotificationVariant } from "../dtos/extras";
 interface Props { title: string, subtitle: string, message: string, variant?: NotificationVariant }
 const Notification = (props: Props) => {
     return (
-        <Toast bg={String(props.variant)} className='position-absolute start-50 translate-middle' style={{ zIndex: 100, top: '50px' }}>
+        <Toast bg={String(props.variant)} className='position-absolute start-50 translate-middle-x m-3' style={{ zIndex: 100 }}>
             <Toast.Header>
                 <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
                 <strong className="me-auto">{props.title}</strong>
