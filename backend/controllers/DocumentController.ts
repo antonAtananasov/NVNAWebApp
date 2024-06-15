@@ -16,10 +16,10 @@ export class DocumentController {
     async createDocument(docReq: ICreateDocumentRequest): Promise<IDocument> {
         const doc: IDocument = {
             ...docReq,
-            uuid: uuidv4(),
             content: docReq.content || '',
             isFolder: docReq.isFolder || false,
-            size: docReq.content?.length || 0
+            size: docReq.content?.length || 0,
+            uuid: ''
         }
         try {
             return await this.documentModel.createDocument(doc) as IDocument

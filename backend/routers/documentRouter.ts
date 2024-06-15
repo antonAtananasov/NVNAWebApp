@@ -200,8 +200,8 @@ documentRouter.post('/:userUUID', async (req, res) => {
     const newDocument: ICreateDocumentRequest = {
         ownerUUID: req.params.userUUID,
         name: req.body.name,
-        isFolder: req.body.isFolder,
-        content: req.body.content
+        isFolder: req.body.isFolder || false,
+        content: req.body.content || ''
     } as IDocument
 
     try {
@@ -219,8 +219,8 @@ documentRouter.post('/:userUUID', async (req, res) => {
             const plan = await documentController.getPlan(user.planId || 0)
             if (plan.storage > occupiedStorage + (newDocument.content?.length || 0) / 1000) {
 
-                const document = await documentController.createDocument(newDocument)
-                res.status(200).send(JSON.stringify(document))
+                const doc = await documentController.createDocument(newDocument)
+                res.status(200).send(JSON.stringify(doc))
                 return
             }
             else {
@@ -284,7 +284,8 @@ documentRouter.post('/share', async (req, res) => {
 
 //PUT
 //updateDocumentContent
-documentRouter.put('/:documentUUID', async (req, res) => {
+documentRouter.put('/:documentUUID', async (req, res): Promise<boolean> => {
+
     const updateDocumentContent: IUpdateDocumentContentRequest = {
         uuid: req.params.documentUUID,
         content: req.body.content,
@@ -293,56 +294,68 @@ documentRouter.put('/:documentUUID', async (req, res) => {
         uuid: req.params.documentUUID,
         newName: req.body.newName,
     }
+
     if (!updateDocumentName.newName && !updateDocumentContent.content) {
         res.status(400).send('No provided data to update document')
+        return false
     }
-    else
+    else {
+
         try {
             if (!req.cookies.session) {
                 res.status(401).send('Session not found or expired')
-                return
-            }
-            const session = JSON.parse(req.cookies.session) as IUserSession
-            const userHasActiveSession = await userAuthenticator.authenticateWithSession(session)
-            const doc = await documentController.getDocument(updateDocumentContent.uuid)
-            if (!doc) {
-                res.status(404).send()
-            }
-            if (userHasActiveSession && session.uuid == doc.ownerUUID) {
-
-                let docUpdatedContent: IDocument | undefined;
-                if (updateDocumentContent.content) {
-                    const docUpdatedContent = await documentController.updateDocumentContent(updateDocumentContent)
-                    if (!docUpdatedContent) {
-                        res.status(500).send()
-                        return
-                    }
-                }
-                if (updateDocumentName.newName) {
-                    const docUpdatedContent = await documentController.renameDocument(updateDocumentName)
-                    if (!docUpdatedContent) {
-                        res.status(500).send()
-                        return
-                    }
-
-                }
-
-                if (docUpdatedContent) {
-                    res.status(200).send(docUpdatedContent)
-                    return
-                }
-
+                return false
             }
             else {
-                res.status(401).send()
+                const session = JSON.parse(req.cookies.session) as IUserSession
+                const userHasActiveSession = await userAuthenticator.authenticateWithSession(session)
+                const doc = await documentController.getDocument(updateDocumentContent.uuid)
+                if (!doc) {
+                    res.status(404).send()
+                    return false
+                }
+                else {
+                    if (userHasActiveSession && session.uuid == doc.ownerUUID) {
+
+                        let docUpdatedContent: IDocument | undefined;
+                        if (updateDocumentContent.content) {
+                            docUpdatedContent = await documentController.updateDocumentContent(updateDocumentContent)
+                            if (!docUpdatedContent) {
+                                res.status(500).send()
+                                return false
+                            }
+                        }
+                        if (updateDocumentName.newName) {
+                            docUpdatedContent = await documentController.renameDocument(updateDocumentName)
+                            if (!docUpdatedContent) {
+                                res.status(500).send()
+                                return false
+                            }
+
+                        }
+
+                        if (docUpdatedContent) {
+                            res.status(200).send(docUpdatedContent)
+                            return false
+                        } else {
+                            res.status(500).send('Unknown error')
+                            return false
+                        }
+
+                    }
+                    else {
+                        res.status(401).send()
+                        return false
+                    }
+                }
             }
         }
         catch (err) {
             console.error((err as Error).message);
             res.status(500).send("documentController: get /:userUUID/:documentUUID: " + (err as Error).message)
-            return
+            return false
         }
-
+    }
 })
 
 
@@ -397,7 +410,8 @@ documentRouter.delete('/:userUUID/shared', async (req, res) => {
         if (userHasActiveSession) {
             const doc = (await documentController.getSharedDocuments(session.uuid)).find(d => d.ownerUUID == documentUUID)
             if (!doc) {
-                res.status(404).send()
+                res.status(404).send('Document not found')
+                return
             }
 
             const updatedDoc = await documentController.unshareDocument(documentUUID)
@@ -411,7 +425,8 @@ documentRouter.delete('/:userUUID/shared', async (req, res) => {
             }
         }
         else {
-            res.status(401).send()
+            res.status(401).send('Unauthorized')
+            return
         }
     }
     catch (err) {

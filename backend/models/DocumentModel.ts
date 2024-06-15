@@ -1,11 +1,11 @@
 import { DB } from "../core/DB";
 import { IDocument, IDocumentSize, convertToDto as convertDocumentResultToDto } from "./IDocument";
 import { IPlan, convertToDto as convertPlanResultToDto } from "./IPlan";
-import { v4 as uuidv4 } from 'uuid';
 import { ISharedDocument, convertToDto as convertSharedDocResultToDto } from "./ISharedDocument";
 import { IUser, convertToDto as convertUserResultToDto } from "./IUser";
-import { IRenameDocumentRequest, IShareDocumentRequest, IUpdateDocumentContentRequest, IUser as IUserDto, IDocument as IDocumentDto, IPlan as IPlanDto } from "../controllers/dtos";
+import { IRenameDocumentRequest, IShareDocumentRequest, IUpdateDocumentContentRequest, IUser as IUserDto, IDocument as IDocumentDto, IPlan as IPlanDto, ICreateDocumentRequest } from "../controllers/dtos";
 
+const { v4: uuidv4 } = require('uuid')
 
 export class DocumentModel extends DB {
 
@@ -27,8 +27,9 @@ export class DocumentModel extends DB {
         try {
             const [rows] = withContent ?
                 await this.connection.query<IDocument[]>('select * from documents where uuid=? limit 1', [uuid]) :
-                await this.connection.query<IDocument[]>('SELECT d.uuid,d.owner_uuid,d.name,d.format,d.root_document_uuid,d.is_folder,d.creation_date,d.last_modified_date,d.last_accessed_date, d.size FROM documents d', [uuid])
-            return convertDocumentResultToDto(rows)[0]
+                await this.connection.query<IDocument[]>('SELECT d.uuid,d.owner_uuid,d.name,d.format,d.root_document_uuid,d.is_folder,d.creation_date,d.last_modified_date,d.last_accessed_date, d.size FROM documents d where uuid=?', [uuid])
+            const doc = convertDocumentResultToDto(rows)[0]
+            return doc
         }
         catch (err) {
             console.error((err as Error).message);
@@ -70,13 +71,13 @@ export class DocumentModel extends DB {
                 'SELECT uuid,owner_uuid,name,format,root_document_uuid,is_folder,creation_date,last_modified_date,last_accessed_date,size FROM documents WHERE owner_uuid=?',
                 [uuid]
             )
-            foundDocuments.push(...ownedDocuments)
+            foundDocuments.push(...convertDocumentResultToDto(ownedDocuments))
             if (includeShared) {
                 const shared_documents = await this.getSharedDocumentsByUser(uuid)
                 if (shared_documents)
                     foundDocuments.push(...shared_documents)
             }
-            return convertDocumentResultToDto(foundDocuments)
+            return foundDocuments
         }
         catch (err) {
             console.error((err as Error).message);
@@ -87,7 +88,7 @@ export class DocumentModel extends DB {
     async getTotalDocumentsSizeByUser(uuid: string): Promise<number> {
         try {
             const [rows] = await this.connection.query<IDocumentSize[]>('select sum(size) from documents where owner_uuid=? group by owner_uuid limit 1', [uuid])
-            return convertDocumentResultToDto(rows)[0].size || 0
+            return rows[0] ? rows[0].size || 0 : 0
         }
         catch (err) {
             console.error((err as Error).message);
@@ -112,9 +113,9 @@ export class DocumentModel extends DB {
         }
     }
 
-    async createDocument(document: any): Promise<IDocumentDto> {
+    async createDocument(document: ICreateDocumentRequest): Promise<IDocumentDto> {
         try {
-            const uuid = uuidv4()
+            const uuid: string = uuidv4()
             await this.connection.query<IDocument[]>('insert into documents (uuid,name,owner_uuid,format,content,root_document_uuid,is_folder,size) values (?,?,?,?,?,?,?,?)', [
                 uuid,
                 document.name,
@@ -123,9 +124,10 @@ export class DocumentModel extends DB {
                 document.content,
                 document.rootDocumentUUID,
                 document.isFolder,
-                document.size / 1000
+                document.content?.length || 0 / 1000
             ])
-            return await this.getDocument(uuid, false)
+            const doc = await this.getDocument(uuid, false)
+            return doc
         }
         catch (err) {
             console.error((err as Error).message);
@@ -158,7 +160,8 @@ export class DocumentModel extends DB {
     accessDocument: (uuid: string) => Promise<IDocumentDto> = async (uuid: string) => {
         try {
             const [rows] = await this.connection.query<IDocument[]>('update documents set last_accessed_date=current_timestamp where uuid=? limit 1', [uuid])
-            return await this.getDocument(uuid)
+            const doc = await this.getDocument(uuid)
+            return doc
         }
         catch (err) {
             console.error((err as Error).message);
