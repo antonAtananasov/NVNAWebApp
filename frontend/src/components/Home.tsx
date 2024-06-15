@@ -125,12 +125,14 @@ const Home = () => {
                             <strong>1. Database Schema</strong>
                             <br />
                             Our database schema is the backbone of the Document Server, consisting of four primary tables:
-                            <ul>
-                                <li><strong>Users</strong>: Stores user information including UUID, username, hashed password, creation date, plan ID, and plan start date.</li>
-                                <li><strong>Plans</strong>: Defines different user plans, specifying storage limits and cost.</li>
-                                <li><strong>Documents</strong>: Contains document details such as UUID, owner UUID, name, format, content, root document UUID (for hierarchical structure), folder status, creation date, last modified date, last accessed date, and size.</li>
-                                <li><strong>Shared Documents</strong>: Manages shared documents, linking document UUIDs to user UUIDs with specific permissions.</li>
-                            </ul>
+                        </p>
+                        <ul>
+                            <li><strong>Users</strong>: Stores user information including UUID, username, hashed password, creation date, plan ID, and plan start date.</li>
+                            <li><strong>Plans</strong>: Defines different user plans, specifying storage limits and cost.</li>
+                            <li><strong>Documents</strong>: Contains document details such as UUID, owner UUID, name, format, content, root document UUID (for hierarchical structure), folder status, creation date, last modified date, last accessed date, and size.</li>
+                            <li><strong>Shared Documents</strong>: Manages shared documents, linking document UUIDs to user UUIDs with specific permissions.</li>
+                        </ul>
+                        <p>
                             Each table is designed with primary keys (PK) and foreign keys (FK) to maintain referential integrity, and nullable fields are clearly marked for flexibility.
                         </p>
                     </Col>
@@ -146,24 +148,24 @@ const Home = () => {
                         <h2 className="h2 font-weight-bold text-center text-md-left text-black m-5">Frontend Components</h2>
                         <p className="lead text-justify text-md-left text-black">
                             The frontend is developed using Vite, React, and TypeScript with SASS for styling. It is organized into several key components and pages:
-                            <ul>
-                                <li><strong>Account Management</strong>:
-                                    <ul>
-                                        <li><strong>Register Account Form</strong>: For creating new accounts via a POST request.</li>
-                                        <li><strong>Account Details</strong>: For reading, updating, and deleting account information using GET, PUT, and DELETE requests.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>Document Management</strong>:
-                                    <ul>
-                                        <li><strong>Document List</strong>: Displays user and shared documents.</li>
-                                        <li><strong>Folder View</strong>: Shows folders and documents in a gallery format.</li>
-                                        <li><strong>Document Viewer</strong>: Allows users to view document contents.</li>
-                                        <li><strong>Document Editor</strong>: Provides a form to edit document name and content.</li>
-                                        <li><strong>Document Controls</strong>: Includes buttons for downloading, deleting, and sharing documents.</li>
-                                    </ul>
-                                </li>
-                            </ul>
                         </p>
+                        <ul>
+                            <li><strong>Account Management</strong>:
+                                <ul>
+                                    <li><strong>Register Account Form</strong>: For creating new accounts via a POST request.</li>
+                                    <li><strong>Account Details</strong>: For reading, updating, and deleting account information using GET, PUT, and DELETE requests.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Document Management</strong>:
+                                <ul>
+                                    <li><strong>Document List</strong>: Displays user and shared documents.</li>
+                                    <li><strong>Folder View</strong>: Shows folders and documents in a gallery format.</li>
+                                    <li><strong>Document Viewer</strong>: Allows users to view document contents.</li>
+                                    <li><strong>Document Editor</strong>: Provides a form to edit document name and content.</li>
+                                    <li><strong>Document Controls</strong>: Includes buttons for downloading, deleting, and sharing documents.</li>
+                                </ul>
+                            </li>
+                        </ul>
                     </Col>
                 </Row>
             </Container>
@@ -174,34 +176,34 @@ const Home = () => {
                         <h2 className="h2 font-weight-bold text-center text-md-left text-black m-5">Backend Structure</h2>
                         <p className="lead text-justify text-md-left text-black">
                             The backend is built with Express and TypeScript, structured to separate concerns and enhance maintainability:
-                            <ul>
-                                <li><strong>Core</strong>:
-                                    <ul>
-                                        <li><strong>DB.ts</strong>: Manages database connections and interactions.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>Models</strong>: Define the structure and relationships of data objects:
-                                    <ul>
-                                        <li><strong>User Model</strong></li>
-                                        <li><strong>Document Model</strong></li>
-                                        <li><strong>Shared Document Model</strong></li>
-                                    </ul>
-                                </li>
-                                <li><strong>Controllers</strong>: Implement business logic and handle requests:
-                                    <ul>
-                                        <li><strong>UserController</strong>: Manages user-related operations such as creating, retrieving, updating, and deleting users.</li>
-                                        <li><strong>DocumentController</strong>: Handles document operations like creation, upload, retrieval, update, sharing, and deletion.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>Routers</strong>: Define API endpoints and link them to controllers:
-                                    <ul>
-                                        <li><strong>AccountRouter</strong>: Manages account-related endpoints.</li>
-                                        <li><strong>DocumentRouter</strong>: Manages document-related endpoints.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>Index.ts</strong>: Initializes the Express app, applies middleware (JSON parsing, CORS), and sets up routes.</li>
-                            </ul>
                         </p>
+                        <ul>
+                            <li><strong>Core</strong>:
+                                <ul>
+                                    <li><strong>DB.ts</strong>: Manages database connections and interactions.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Models</strong>: Define the structure and relationships of data objects:
+                                <ul>
+                                    <li><strong>User Model</strong></li>
+                                    <li><strong>Document Model</strong></li>
+                                    <li><strong>Shared Document Model</strong></li>
+                                </ul>
+                            </li>
+                            <li><strong>Controllers</strong>: Implement business logic and handle requests:
+                                <ul>
+                                    <li><strong>UserController</strong>: Manages user-related operations such as creating, retrieving, updating, and deleting users.</li>
+                                    <li><strong>DocumentController</strong>: Handles document operations like creation, upload, retrieval, update, sharing, and deletion.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Routers</strong>: Define API endpoints and link them to controllers:
+                                <ul>
+                                    <li><strong>AccountRouter</strong>: Manages account-related endpoints.</li>
+                                    <li><strong>DocumentRouter</strong>: Manages document-related endpoints.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Index.ts</strong>: Initializes the Express app, applies middleware (JSON parsing, CORS), and sets up routes.</li>
+                        </ul>
                     </Col>
                     <Col md={6} className="text-center">
                         <img src={arch2} alt="Architecture 2" className="img-fluid" style={{ width: '70%' }} />
@@ -218,23 +220,44 @@ const Home = () => {
                         <h2 className="h2 font-weight-bold text-center text-md-left text-black m-5">API Endpoints</h2>
                         <p className="lead text-justify text-md-left text-black">
                             Our API endpoints are designed to handle CRUD operations efficiently:
-                            <ul>
-                                <li><strong>/account</strong>:
-                                    <ul>
-                                        <li><strong>POST</strong>: Create a new account.</li>
-                                        <li><strong>GET</strong>: Retrieve account details.</li>
-                                        <li><strong>PUT</strong>: Update account information.</li>
-                                        <li><strong>DELETE</strong>: Delete an account.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>/documents</strong>:
-                                    <ul>
-                                        <li><strong>GET</strong>: Retrieve user or shared documents.</li>
-                                        <li><strong>PUT</strong>: Update document details.</li>
-                                        <li><strong>DELETE</strong>: Delete a document.</li>
-                                    </ul>
-                                </li>
-                            </ul>
+                        </p>
+                        <ul>
+                            <li><strong>/api/users</strong>:
+                                <ul>
+                                    <li><strong>POST</strong>: Create a new account.</li>
+                                </ul>
+                            </li>
+                            <li><strong>/api/users/:uuid</strong>:
+                                <ul>
+                                    <li><strong>GET</strong>: Retrieve account details.</li>
+                                    <li><strong>PUT</strong>: Update account information.</li>
+                                    <li><strong>DELETE</strong>: Delete an account.</li>
+                                </ul>
+                            </li>
+                            <li><strong>/api/users/login</strong>:
+                                <ul>
+                                    <li><strong>POST</strong>: Request authentication from the server.</li>
+                                </ul>
+                            </li>
+                            <li><strong>/api/documents/gallery</strong>:
+                                <ul>
+                                    <li><strong>GET</strong>: Retrieve user documents metadata.</li>
+                                </ul>
+                            </li>
+                            <li><strong>/api/documents/:documentUUID</strong>:
+                                <ul>
+                                    <li><strong>GET</strong>: Retrieve full user document.</li>
+                                    <li><strong>PUT</strong>: Update document data.</li>
+                                    <li><strong>DELETE</strong>: Remove a document.</li>
+                                </ul>
+                            </li>
+                            <li><strong>/api/documents/:userUUID</strong>:
+                                <ul>
+                                    <li><strong>POST</strong>: Create new document for user.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>
                             By integrating these components, our Document Server provides a comprehensive solution for document management, ensuring data integrity, efficient access control, and a user-friendly interface. Explore the features and manage your documents with ease!
                         </p>
                     </Col>

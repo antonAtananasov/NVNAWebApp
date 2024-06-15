@@ -54,7 +54,7 @@ const NavBar = () => {
                                                 <>
                                                     {showEditUser &&
                                                         <>
-                                                            <EditUser hidden={showEditUser} />
+                                                            <EditUser hidden={showEditUser} onClose={handleCloseEditUser} />
 
                                                             <NavDropdown title={<i className="bi bi-person-circle"></i>} id="user-dropdown" align="end">
                                                                 <NavDropdown.Item onClick={handleEditUserClick}>Edit User</NavDropdown.Item>
