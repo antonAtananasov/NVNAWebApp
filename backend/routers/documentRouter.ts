@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { UserAuthenticator } from "../controllers/UserAuthenticator";
 import { DocumentController } from "../controllers/DocumentController";
-import { ICreateDocumentRequest, IDocument, IShareDocumentRequest, IUpdateDocumentContentRequest, IUserSession } from "../controllers/dtos";
+import { ICreateDocumentRequest, IDocument, IRenameDocumentRequest, IShareDocumentRequest, IUpdateDocumentContentRequest, IUserSession } from "../controllers/dtos";
 
 const documentRouter = Router()
 const userAuthenticator = new UserAuthenticator()
@@ -285,42 +285,63 @@ documentRouter.post('/share', async (req, res) => {
 //PUT
 //updateDocumentContent
 documentRouter.put('/:documentUUID', async (req, res) => {
-    const updateDocument: IUpdateDocumentContentRequest = {
+    const updateDocumentContent: IUpdateDocumentContentRequest = {
         uuid: req.params.documentUUID,
-        content: req.body.newContent
+        content: req.body.content,
     }
-    try {
-        if (!req.cookies.session) {
-            res.status(401).send('Session not found or expired')
-            return
-        }
-        const session = JSON.parse(req.cookies.session) as IUserSession
-        const userHasActiveSession = await userAuthenticator.authenticateWithSession(session)
-        const doc = await documentController.getDocument(updateDocument.uuid)
-        if (!doc) {
-            res.status(404).send()
-        }
-        if (userHasActiveSession && session.uuid == doc.ownerUUID) {
-
-            const updatedDoc = await documentController.updateDocumentContent(updateDocument)
-            if (updatedDoc) {
-                res.status(200).send(updatedDoc)
+    const updateDocumentName: IRenameDocumentRequest = {
+        uuid: req.params.documentUUID,
+        newName: req.body.newName,
+    }
+    if (!updateDocumentName.newName && !updateDocumentContent.content) {
+        res.status(400).send('No provided data to update document')
+    }
+    else
+        try {
+            if (!req.cookies.session) {
+                res.status(401).send('Session not found or expired')
                 return
+            }
+            const session = JSON.parse(req.cookies.session) as IUserSession
+            const userHasActiveSession = await userAuthenticator.authenticateWithSession(session)
+            const doc = await documentController.getDocument(updateDocumentContent.uuid)
+            if (!doc) {
+                res.status(404).send()
+            }
+            if (userHasActiveSession && session.uuid == doc.ownerUUID) {
+
+                let docUpdatedContent: IDocument | undefined;
+                if (updateDocumentContent.content) {
+                    const docUpdatedContent = await documentController.updateDocumentContent(updateDocumentContent)
+                    if (!docUpdatedContent) {
+                        res.status(500).send()
+                        return
+                    }
+                }
+                if (updateDocumentName.newName) {
+                    const docUpdatedContent = await documentController.renameDocument(updateDocumentName)
+                    if (!docUpdatedContent) {
+                        res.status(500).send()
+                        return
+                    }
+
+                }
+
+                if (docUpdatedContent) {
+                    res.status(200).send(docUpdatedContent)
+                    return
+                }
+
             }
             else {
-                res.status(500).send()
-                return
+                res.status(401).send()
             }
         }
-        else {
-            res.status(401).send()
+        catch (err) {
+            console.error((err as Error).message);
+            res.status(500).send("documentController: get /:userUUID/:documentUUID: " + (err as Error).message)
+            return
         }
-    }
-    catch (err) {
-        console.error((err as Error).message);
-        res.status(500).send("documentController: get /:userUUID/:documentUUID: " + (err as Error).message)
-        return
-    }
 
 })
 

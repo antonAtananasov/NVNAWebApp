@@ -146,7 +146,7 @@ export class DocumentModel extends DB {
 
     async updateDocumentContent(updateContentReq: IUpdateDocumentContentRequest): Promise<IDocumentDto> {
         try {
-            await this.connection.query('update documents set content=?,last_modified_date=current_timestamp,size=? where uuid=? limit 1', [updateContentReq.content, updateContentReq.uuid, updateContentReq.content.length])
+            await this.connection.query('update documents set content=?,last_modified_date=current_timestamp,size=? where uuid=? limit 1', [updateContentReq.content, updateContentReq.content.length, updateContentReq.uuid])
             return await this.getDocument(updateContentReq.uuid)
         }
         catch (err) {
@@ -168,8 +168,10 @@ export class DocumentModel extends DB {
 
     deleteDocument: (uuid: string) => Promise<IDocumentDto> = async (uuid: string) => {
         try {
-            await this.connection.query('delete from documents where uuid=? limit 1', [uuid])
-            return await this.getDocument(uuid)
+            const findDoc = await this.getDocument(uuid)
+            if (findDoc)
+                await this.connection.query('delete from documents where uuid=? limit 1', [uuid])
+            return findDoc
         }
         catch (err) {
             console.error((err as Error).message);

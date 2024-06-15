@@ -1,5 +1,5 @@
 import { DocumentModel } from "../models/DocumentModel";
-import { ICreateDocumentRequest, IDocument, IShareDocumentRequest, IUpdateDocumentContentRequest, IPlan, IUser } from "./dtos";
+import { ICreateDocumentRequest, IDocument, IShareDocumentRequest, IUpdateDocumentContentRequest, IPlan, IUser, IRenameDocumentRequest } from "./dtos";
 import { v4 as uuidv4 } from 'uuid'
 import { ISharedDocument } from "./dtos";
 
@@ -127,6 +127,15 @@ export class DocumentController {
     async updateDocumentContent(updateReq: IUpdateDocumentContentRequest): Promise<IDocument> {
         try {
             return await this.documentModel.updateDocumentContent(updateReq)
+        }
+        catch (err) {
+            console.error((err as Error).message);
+            throw new Error('DocumentController: getUser: ' + (err as Error).message)
+        }
+    }
+    async renameDocument(newName: IRenameDocumentRequest): Promise<IDocument> {
+        try {
+            return await this.documentModel.updateDocumentName(newName)
         }
         catch (err) {
             console.error((err as Error).message);

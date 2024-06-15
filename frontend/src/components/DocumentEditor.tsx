@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { saveAs } from 'file-saver';
@@ -11,6 +11,8 @@ import './DocumentEditor.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button } from 'react-bootstrap'
 import { useLocation } from 'react-router-dom';
+import { IDocument, IRenameDocumentRequest, IUpdateDocumentContentRequest } from '../dtos/dtos';
+import { INotification, NotificationContext } from '../dtos/extras';
 
 const CustomToolbar: React.FC<{
     handleSaveDoc: () => void,
@@ -86,6 +88,7 @@ const DocumentEditor: React.FC = () => {
     const [pages, setPages] = useState<string[]>(['']);
     const [documentName, setDocumentName] = useState<string>(''); // State for document name
     const containerRef = useRef<HTMLDivElement>(null);
+    const { setNotification } = useContext(NotificationContext)!
 
     const handleSaveDoc = async () => {
         const doc = new Document({
@@ -141,6 +144,53 @@ const DocumentEditor: React.FC = () => {
             newPages.push('');
         }
         setPages(newPages);
+        const locationParts = location.pathname.split('/')
+        const documentUUID = locationParts[locationParts.length - 1]
+        const req: IUpdateDocumentContentRequest = {
+            uuid: documentUUID,
+            content: newPages.join('\n')
+        }
+        console.log(req)
+        fetch('http://localhost:3001/api/documents/' + documentUUID, {
+            method: 'put', headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }, credentials: 'include', body: JSON.stringify(req)
+        }).then(async (res: Response) => {
+            if (res.status === 200) {
+                // res.json().then((docs: any) => { docs && setDocuments(docs) })
+            }
+            else {
+                const t = await res.text()
+                setNotification({ title: res.statusText, subtitle: String(res.status), message: t } as INotification)
+            }
+        }).catch()
+
+    };
+    const handleDocumentNameChange = (newName: string) => {
+        setDocumentName(newName);
+        const locationParts = location.pathname.split('/')
+        const documentUUID = locationParts[locationParts.length - 1]
+        const req: IRenameDocumentRequest = {
+            uuid: documentUUID,
+            newName: newName
+        }
+        console.log(req)
+        fetch('http://localhost:3001/api/documents/' + documentUUID, {
+            method: 'put', headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }, credentials: 'include', body: JSON.stringify(req)
+        }).then(async (res: Response) => {
+            if (res.status === 200) {
+                // res.json().then((docs: any) => { docs && setDocuments(docs) })
+            }
+            else {
+                const t = await res.text()
+                setNotification({ title: res.statusText, subtitle: String(res.status), message: t } as INotification)
+            }
+        }).catch()
+
     };
     const location = useLocation()
     useEffect(() => {
@@ -167,14 +217,29 @@ const DocumentEditor: React.FC = () => {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             }, credentials: 'include',
-        }).then((res: Response) => {
+        }).then(async (res: Response) => {
             if (res.status === 200) {
                 res.json().then((doc: any) => {
                     if (doc) {
-                        setPages([doc.content])
-                        setDocumentName(doc.name)
+                        const d: IDocument = doc as IDocument
+                        try {
+
+                            doc.content = doc.content.data.map((chr: number) => String.fromCharCode(chr)).join('')
+                        }
+                        catch {
+                            console.log(654321)
+                        }
+                        if (!d.content) {
+                            d.content = ''
+                        }
+                        console.log(d)
+                        setPages([d.content!])
+                        setDocumentName(d.name)
                     }
                 })
+            } else {
+                setNotification({ title: res.statusText, subtitle: String(res.status), message: 'Try logging in again' } as INotification)
+
             }
         }).catch()
     }, []);
@@ -187,7 +252,7 @@ const DocumentEditor: React.FC = () => {
                         type="text"
                         placeholder="Document Name"
                         value={documentName}
-                        onChange={(e) => setDocumentName(e.target.value)}
+                        onChange={(e) => handleDocumentNameChange(e.target.value)}
                         className="form-control mb-2"
                     />
                     <CustomToolbar

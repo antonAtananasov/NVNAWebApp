@@ -19,7 +19,7 @@ export interface INotification {
     title: string,
     subtitle: string,
     message: string,
-    variant: NotificationVariant
+    variant?: NotificationVariant
 }
 export interface INotificationContext {
     notification: INotification | undefined,
