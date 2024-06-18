@@ -13,7 +13,7 @@ const EditUser = (props: Props) => {
     const [userName, setUserName] = useState(session?.username);
     const [password, setPassword] = useState('');
     const [oldPassword, setOldPassword] = useState('');
-    const [oldPassword2, setOldPassword2] = useState('');
+    const [password2, setPassword2] = useState('');
     const { setNotification } = useContext(NotificationContext) as INotificationContext
 
     const handleSave = () => {
@@ -21,7 +21,7 @@ const EditUser = (props: Props) => {
         const req: IUserChangeCredentialsRequest = {
             password: oldPassword,
             username: session?.username!,
-            newPassword: password.length >= 6 ? password : undefined,
+            newPassword: password.length >= 6 && password === password2 ? password : undefined,
             newUsername: userName != session?.username && userName!.length >= 4 ? userName : undefined
         }
         fetch('http://localhost:3001/api/users/' + session?.uuid, {
@@ -74,6 +74,16 @@ const EditUser = (props: Props) => {
                             className="custom-input" // Add custom CSS class
                         />
                     </Form.Group>
+                    <Form.Group className="mb-3" controlId="formPassword">
+                        <Form.Label>Repeat Password</Form.Label>
+                        <Form.Control
+                            type="password"
+                            placeholder="Enter your new password"
+                            value={password2}
+                            onChange={(e) => setPassword2(e.target.value)}
+                            className="custom-input" // Add custom CSS class
+                        />
+                    </Form.Group>
                     <br className='py-4'></br>
                     <hr className='py-3'></hr>
                     <Form.Group className="mb-3" controlId="formPassword1">
@@ -83,16 +93,6 @@ const EditUser = (props: Props) => {
                             placeholder="Enter your old password"
                             value={oldPassword}
                             onChange={(e) => setOldPassword(e.target.value)}
-                            className="custom-input" // Add custom CSS class
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formPassword2">
-                        <Form.Label>Repeat old Password</Form.Label>
-                        <Form.Control
-                            type="password"
-                            placeholder="Enter your old password"
-                            value={oldPassword2}
-                            onChange={(e) => setOldPassword2(e.target.value)}
                             className="custom-input" // Add custom CSS class
                         />
                     </Form.Group>
