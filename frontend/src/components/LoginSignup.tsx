@@ -41,7 +41,6 @@ const LoginSignup = () => {
                 }).then(async (res: Response) => {
                     if (res.status === 200) {
                         setNotification({ title: 'Register', subtitle: String(res.status), message: "Registered successfully", variant: NotificationVariant.info } as INotification)
-                        handleLogin()
                     }
                     else {
                         const t = await res.text()

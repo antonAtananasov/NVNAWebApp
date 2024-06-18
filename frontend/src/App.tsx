@@ -19,7 +19,12 @@ const App: React.FC = () => {
     const [notification, setNotification] = useState<INotification | undefined>(undefined)
 
     useEffect(() => {
-        setSession(() => JSON.parse(Cookies.get('session')!) as IUserSession)
+        let sesh: IUserSession | undefined = undefined
+        try {
+            sesh = JSON.parse(Cookies.get('session') || '')
+        } catch { }
+        if (sesh)
+            setSession((sesh) as IUserSession)
     }, [document.cookie])
 
 

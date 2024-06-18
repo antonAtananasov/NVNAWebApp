@@ -239,7 +239,6 @@ const DocumentEditor: React.FC = () => {
                 name: 'New Document.txt',
                 ownerUUID: session?.uuid!
             }
-            console.log(3456789)
             fetch('http://localhost:3001/api/documents/' + session?.uuid, {
                 method: 'post', headers: {
                     'Accept': 'application/json',
